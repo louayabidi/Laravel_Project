@@ -1,0 +1,11 @@
+*.log
+
+.env
+.env.backup
+.env.production
+
+/node_modules
+
+
+/vendor
+
