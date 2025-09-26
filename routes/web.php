@@ -5,11 +5,23 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\SessionsController;
+use App\Http\Controllers\SanteMesureController;
+use App\Http\Controllers\ObjectifSanteController;
+
+
+
+
+// CRUD complet pour les mesures de santé
+Route::resource('sante-mesures', SanteMesureController::class);
+Route::get('suivi-sante', [SanteMesureController::class, 'create'])->name('suivi-sante');
+
+
+
 
 // Root redirect
-Route::get('/', function () {
-    return redirect()->route('sign-in');
-})->middleware('guest');
+Route::get('sign-in', [SessionsController::class, 'create'])
+    ->middleware('guest')
+    ->name('sign-in'); // ici 'sign-in' au lieu de 'login'
 
 // Authentication routes
 Route::get('sign-up', [RegisterController::class, 'create'])->middleware('guest')->name('register');
@@ -17,7 +29,7 @@ Route::post('sign-up', [RegisterController::class, 'store'])->middleware('guest'
 
 Route::get('sign-in', [SessionsController::class, 'create'])
     ->middleware('guest')
-    ->name('login'); 
+    ->name('login');
 
 Route::post('sign-in', [SessionsController::class, 'store'])
     ->middleware('guest');
