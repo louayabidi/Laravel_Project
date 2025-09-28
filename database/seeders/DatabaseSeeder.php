@@ -20,5 +20,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@material.com',
             'password' => ('secret')
         ]);
+
+
+
+
+        $this->call(FoodSeeder::class);
+        $this->call(MealSeeder::class);
+        $this->call(AnalyticSeeder::class);
+        $this->call(MealFoodSeeder::class);
     }
 }
