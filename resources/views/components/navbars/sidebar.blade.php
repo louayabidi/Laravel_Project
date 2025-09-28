@@ -47,6 +47,40 @@
                     <span class="nav-link-text ms-1">Dashboard</span>
                 </a>
             </li>
+
+<li class="nav-item">
+        <a class="nav-link text-white {{ $activePage == 'foods' ? ' active bg-gradient-primary' : '' }} " href="{{ route('foods.index') }}">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                <i class="material-icons opacity-10">fastfood</i>
+            </div>
+            <span class="nav-link-text ms-1">Foods</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-white {{ $activePage == 'meals' ? ' active bg-gradient-primary' : '' }} " href="{{ route('meals.index') }}">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                <i class="material-icons opacity-10">restaurant</i>
+            </div>
+            <span class="nav-link-text ms-1">Meals</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-white {{ $activePage == 'analytics' ? ' active bg-gradient-primary' : '' }} " href="{{ route('analytics.index') }}">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                <i class="material-icons opacity-10">analytics</i>
+            </div>
+            <span class="nav-link-text ms-1">Analytics</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-white {{ $activePage == 'meal-foods' ? ' active bg-gradient-primary' : '' }} " href="{{ route('meal-foods.index') }}">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                <i class="material-icons opacity-10">list_alt</i>
+            </div>
+            <span class="nav-link-text ms-1">Meal Foods</span>
+        </a>
+    </li>
+
             <li class="nav-item">
                 <a class="nav-link text-white {{ $activePage == 'tables' ? ' active bg-gradient-primary' : '' }} "
                     href="{{ route('tables') }}">

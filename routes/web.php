@@ -5,6 +5,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\SessionsController;
+use App\Http\Controllers\FoodController;
+use App\Http\Controllers\MealController;
+use App\Http\Controllers\AnalyticController;
+use App\Http\Controllers\MealFoodController;
 
 // Root redirect
 Route::get('/', function () {
@@ -51,4 +55,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('static-sign-up', fn() => view('pages.static-sign-up'))->name('static-sign-up');
     Route::get('user-management', fn() => view('pages.laravel-examples.user-management'))->name('user-management');
     Route::get('user-profile', fn() => view('pages.laravel-examples.user-profile'))->name('user-profile');
+
+
+
+
+    //gestion alimentaire 
+Route::resource('foods', FoodController::class);
+Route::resource('meals', MealController::class);
+Route::resource('analytics', AnalyticController::class);
+Route::resource('meal-foods', MealFoodController::class);
+
+
 });
