@@ -6,14 +6,16 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\SanteMesureController;
-use App\Http\Controllers\ObjectifSanteController;
 
 
 
 
-// CRUD complet pour les mesures de santé
-Route::resource('sante-mesures', SanteMesureController::class);
-Route::get('suivi-sante', [SanteMesureController::class, 'create'])->name('suivi-sante');
+// Routes pour la gestion des mesures de santé
+Route::middleware(['auth'])->group(function () {
+    Route::resource('sante-mesures', SanteMesureController::class);
+    Route::get('suivi-sante', [SanteMesureController::class, 'create'])->name('suivi-sante');
+    Route::get('sante-mesures/export/pdf', [SanteMesureController::class, 'exportPDF'])->name('sante-mesures.export.pdf');
+});
 
 
 

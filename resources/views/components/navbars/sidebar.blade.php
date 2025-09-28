@@ -47,6 +47,36 @@
                     <span class="nav-link-text ms-1">Dashboard</span>
                 </a>
             </li>
+            
+            <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#santeMenu" class="nav-link text-white {{ in_array($activePage, ['sante-mesures.index', 'sante-mesures.create']) ? 'active' : '' }}" aria-controls="santeMenu" role="button" aria-expanded="{{ in_array($activePage, ['sante-mesures.index', 'sante-mesures.create']) ? 'true' : 'false' }}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons-round opacity-10">health_and_safety</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Santé</span>
+                    <i class="material-icons ms-auto text-sm transform-rotate-0">expand_more</i>
+                </a>
+                <div class="collapse {{ in_array($activePage, ['sante-mesures.index', 'sante-mesures.create']) ? 'show' : '' }}" id="santeMenu">
+                    <ul class="nav ">
+                        <li class="nav-item ps-4">
+                            <a class="nav-link text-white {{ $activePage == 'sante-mesures.index' ? ' active bg-gradient-primary' : '' }}" href="{{ route('sante-mesures.index') }}">
+                                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                    <i class="material-icons opacity-10">monitoring</i>
+                                </div>
+                                <span class="nav-link-text ms-1">Mesures de Santé</span>
+                            </a>
+                        </li>
+                        <li class="nav-item ps-4">
+                            <a class="nav-link text-white {{ $activePage == 'sante-mesures.create' ? ' active bg-gradient-primary' : '' }}" href="{{ route('sante-mesures.create') }}">
+                                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                    <i class="material-icons opacity-10">add_circle</i>
+                                </div>
+                                <span class="nav-link-text ms-1">Nouvelle Mesure</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
             <li class="nav-item">
                 <a class="nav-link text-white {{ $activePage == 'tables' ? ' active bg-gradient-primary' : '' }} "
                     href="{{ route('tables') }}">
