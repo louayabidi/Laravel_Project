@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ObjectifSante extends Model
+class PriseDePoids extends Model
 {
     //
 }
