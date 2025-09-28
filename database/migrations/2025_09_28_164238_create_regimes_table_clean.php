@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sante_mesure', function (Blueprint $table) {
+        Schema::create('regimes', function (Blueprint $table) {
             $table->id();
+            $table->enum('type_regime', ['Fitnesse', 'musculation', 'prise_de_poids']);
+            $table->decimal('valeur_cible', 8, 2)->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sante_mesure');
+        Schema::dropIfExists('regimes');
     }
 };
