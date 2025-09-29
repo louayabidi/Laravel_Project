@@ -86,6 +86,10 @@
                                             <td>{{ $sante_mesure->date_mesure->format('d/m/Y') }}</td>
                                         </tr>
                                         <tr>
+                                            <th>Date de remplissage :</th>
+                                            <td>{{ $sante_mesure->date_remplie ? $sante_mesure->date_remplie->format('d/m/Y') : 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
                                             <th>Poids :</th>
                                             <td>{{ $sante_mesure->poids_kg }} kg</td>
                                         </tr>
