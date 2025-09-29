@@ -9,11 +9,14 @@ use App\Http\Controllers\FoodController;
 use App\Http\Controllers\MealController;
 use App\Http\Controllers\AnalyticController;
 use App\Http\Controllers\MealFoodController;
+use App\Http\Controllers\HabitudeController;
+
 
 // Root redirect
 Route::get('/', function () {
-    return redirect()->route('sign-in');
+    return redirect()->route('login');
 })->middleware('guest');
+
 
 // Authentication routes
 Route::get('sign-up', [RegisterController::class, 'create'])->middleware('guest')->name('register');
@@ -21,6 +24,7 @@ Route::post('sign-up', [RegisterController::class, 'store'])->middleware('guest'
 
 Route::get('sign-in', [SessionsController::class, 'create'])
     ->middleware('guest')
+    //->name('sign-in');
     ->name('login'); 
 
 Route::post('sign-in', [SessionsController::class, 'store'])
@@ -37,8 +41,10 @@ Route::get('/reset-password/{token}', function ($token) {
 })->middleware('guest')->name('password.reset');
 
 // Dashboard route
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
-
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware('auth')
+    ->name('dashboard');
+   
 // Profile & logout
 Route::post('sign-out', [SessionsController::class, 'destroy'])->middleware('auth')->name('logout');
 Route::get('profile', [ProfileController::class, 'create'])->middleware('auth')->name('profile');
@@ -55,15 +61,27 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('static-sign-up', fn() => view('pages.static-sign-up'))->name('static-sign-up');
     Route::get('user-management', fn() => view('pages.laravel-examples.user-management'))->name('user-management');
     Route::get('user-profile', fn() => view('pages.laravel-examples.user-profile'))->name('user-profile');
+    
+    // Route back/admin en premier
+Route::get('habitudes/back', [HabitudeController::class, 'backIndex'])
+    ->name('habitudes.backIndex');
+
+// Routes front pour les utilisateurs (CRUD)
+Route::resource('habitudes', HabitudeController::class)
+    ->except(['index']); // index normal sera séparé
+
+// Route index utilisateur
+Route::get('habitudes', [HabitudeController::class, 'index'])
+    ->name('habitudes.index');
 
 
-
-
-    //gestion alimentaire 
+   // gestion alimentaire 
 Route::resource('foods', FoodController::class);
 Route::resource('meals', MealController::class);
 Route::resource('analytics', AnalyticController::class);
 Route::resource('meal-foods', MealFoodController::class);
+
+
 
 
 });
