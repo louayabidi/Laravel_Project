@@ -11,7 +11,7 @@
         </div>
         <main class="main-content  mt-0">
             <div class="page-header align-items-start min-vh-100"
-                style="background-image: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80');">
+                style="background-image: url('https://pixaii.com/files/preview/1280x717/117408590426tjtt2zupzjvdiielqxaptpmhorrdjer9ikv0fupfcmeyijt8omogq0gpb7gsnjgxpcudihjljgsqm40r9g44ystgg8pzctbrbbk.jpg');">
                 <span class="mask bg-gradient-dark opacity-6"></span>
                 <div class="container mt-5">
                     <div class="row signin-margin">
@@ -20,27 +20,6 @@
                                 <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                                     <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
                                         <h4 class="text-white font-weight-bolder text-center mt-2 mb-0">Sign in</h4>
-                                        <div class="row mt-3">
-                                            <h6 class='text-white text-center'>
-                                                <span class="font-weight-normal">Email:</span> admin@material.com
-                                                <br>
-                                                <span class="font-weight-normal">Password:</span> secret</h6>
-                                            <div class="col-2 text-center ms-auto">
-                                                <a class="btn btn-link px-3" href="javascript:;">
-                                                    <i class="fa fa-facebook text-white text-lg"></i>
-                                                </a>
-                                            </div>
-                                            <div class="col-2 text-center px-1">
-                                                <a class="btn btn-link px-3" href="javascript:;">
-                                                    <i class="fa fa-github text-white text-lg"></i>
-                                                </a>
-                                            </div>
-                                            <div class="col-2 text-center me-auto">
-                                                <a class="btn btn-link px-3" href="javascript:;">
-                                                    <i class="fa fa-google text-white text-lg"></i>
-                                                </a>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -57,14 +36,14 @@
                                         @endif
                                         <div class="input-group input-group-outline mt-3">
                                             <label class="form-label">Email</label>
-                                            <input type="email" class="form-control" name="email" value="{{ 'admin@material.com' }}">
+                                            <input type="email" class="form-control" name="email" >
                                         </div>
                                         @error('email')
                                         <p class='text-danger inputerror'>{{ $message }} </p>
                                         @enderror
                                         <div class="input-group input-group-outline mt-3">
                                             <label class="form-label">Password</label>
-                                            <input type="password" class="form-control" name="password" value='{{ 'secret'}}'>
+                                            <input type="password" class="form-control" name="password" >
                                         </div>
                                         @error('password')
                                         <p class='text-danger inputerror'>{{ $message }} </p>
