@@ -25,7 +25,8 @@ class User extends Authenticatable
         'location',
         'phone',
         'about',
-        'password_confirmation'
+        'password_confirmation',
+        'role',
     ];
 
     /**
@@ -50,6 +51,12 @@ class User extends Authenticatable
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = bcrypt($password);
+    }
+
+    public function isAdmin(): bool
+    {
+        
+        return $this->role === 'admin';
     }
 
 }
