@@ -12,9 +12,11 @@
                     <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
                         <div class="d-flex justify-content-between align-items-center px-3">
                             <h6 class="text-white text-capitalize ps-3">Suivi de Santé</h6>
+                            @if(auth()->user()->role !== 'admin')
                             <a href="{{ route('sante-mesures.create') }}" class="btn btn-sm btn-info">
                                 <i class="material-icons">add</i> Nouvelle Mesure
                             </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -83,6 +85,7 @@
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Patient</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date Remplie</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Poids</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">IMC</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Fréq. Cardiaque</th>
@@ -108,6 +111,13 @@
                                         <div class="d-flex px-2 py-1">
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm">{{ $mesure->date_mesure->format('d/m/Y') }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ $mesure->date_remplie ? $mesure->date_remplie->format('d/m/Y') : 'N/A' }}</h6>
                                             </div>
                                         </div>
                                     </td>
@@ -139,9 +149,12 @@
                                         <a href="{{ route('sante-mesures.show', $mesure) }}" class="btn btn-link text-primary px-3 mb-0">
                                             <i class="material-icons text-sm me-2">visibility</i>Voir
                                         </a>
+                                        @if(auth()->user()->can('update', $mesure))
                                         <a href="{{ route('sante-mesures.edit', $mesure) }}" class="btn btn-link text-warning px-3 mb-0">
                                             <i class="material-icons text-sm me-2">edit</i>Modifier
                                         </a>
+                                        @endif
+                                        @if(auth()->user()->can('delete', $mesure))
                                         <form action="{{ route('sante-mesures.destroy', $mesure) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
@@ -150,6 +163,7 @@
                                                 <i class="material-icons text-sm me-2">delete</i>Supprimer
                                             </button>
                                         </form>
+                                        @endif
                                     </td>
                                 </tr>
                                 @endforeach

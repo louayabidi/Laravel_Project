@@ -23,7 +23,7 @@ class SanteMesurePolicy
      */
     public function view(User $user, SanteMesure $santeMesure): bool
     {
-        return $user->id === $santeMesure->user_id;
+        return $user->role === 'admin' || $user->id === $santeMesure->user_id;
     }
 
     /**
@@ -31,7 +31,7 @@ class SanteMesurePolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->role !== 'admin';
     }
 
     /**
@@ -39,7 +39,7 @@ class SanteMesurePolicy
      */
     public function update(User $user, SanteMesure $santeMesure): bool
     {
-        return $user->id === $santeMesure->user_id;
+        return $user->role !== 'admin' && $user->id === $santeMesure->user_id;
     }
 
     /**
@@ -47,6 +47,6 @@ class SanteMesurePolicy
      */
     public function delete(User $user, SanteMesure $santeMesure): bool
     {
-        return $user->id === $santeMesure->user_id;
+        return $user->role === 'admin' || $user->id === $santeMesure->user_id;
     }
 }
