@@ -10,6 +10,7 @@ use App\Http\Controllers\MealController;
 use App\Http\Controllers\AnalyticController;
 use App\Http\Controllers\MealFoodController;
 use App\Http\Controllers\HabitudeController;
+use App\Http\Controllers\SanteMesureController;
 
 
 // Root redirect
@@ -68,12 +69,30 @@ Route::get('habitudes/back', [HabitudeController::class, 'backIndex'])
 
 // Routes front pour les utilisateurs (CRUD)
 Route::resource('habitudes', HabitudeController::class)
-    ->except(['index']); // index normal sera séparé
+    ->except(['index']); 
 
 // Route index utilisateur
 Route::get('habitudes', [HabitudeController::class, 'index'])
     ->name('habitudes.index');
 
+
+
+
+        // Route back/admin en premier
+Route::get('sante-mesures/back', [SanteMesureController::class, 'backIndex'])
+    ->name('sante-mesures.backIndex');
+Route::get('sante-mesures/back/{sante_mesure}', [SanteMesureController::class, 'backShow'])
+    ->name('sante-mesures.backShow');
+
+// Routes front pour les utilisateurs (CRUD)
+Route::resource('sante-mesures', SanteMesureController::class)
+    ->except(['index']); 
+
+// Route index utilisateur
+Route::get('sante-mesures', [SanteMesureController::class, 'index'])
+    ->name('sante-mesures.index');
+    
+    Route::get('sante-mesures/export/pdf', [SanteMesureController::class, 'exportPDF'])->name('sante-mesures.export.pdf');
 
    // gestion alimentaire 
 Route::resource('foods', FoodController::class);

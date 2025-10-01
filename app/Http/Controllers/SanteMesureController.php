@@ -42,7 +42,7 @@ class SanteMesureController extends Controller
             'tension' => $mesures->map(fn($m) => [$m->tension_systolique, $m->tension_diastolique])
         ];
 
-        return view('sante_mesures.index', compact('mesures', 'evolutionData'));
+        return view('sante-mesures.index', compact('mesures', 'evolutionData'));
     }
 
     public function show(SanteMesure $sante_mesure)
@@ -53,12 +53,12 @@ class SanteMesureController extends Controller
         $alertes = $sante_mesure->needsAlert();
         $regime = $sante_mesure->regime;
 
-        return view('sante_mesures.show', compact('sante_mesure', 'recommendations', 'alertes', 'regime'));
+        return view('sante-mesures.show', compact('sante_mesure', 'recommendations', 'alertes', 'regime'));
     }
 
     public function create()
     {
-        return view('sante_mesures.create');
+        return view('sante-mesures.create');
     }
 
     public function store(Request $request)
@@ -106,7 +106,7 @@ class SanteMesureController extends Controller
     public function edit(SanteMesure $sante_mesure)
     {
         $this->authorize('update', $sante_mesure);
-        return view('sante_mesures.edit', ['mesure' => $sante_mesure]);
+        return view('sante-mesures.edit', ['mesure' => $sante_mesure]);
     }
 
     public function update(Request $request, SanteMesure $sante_mesure)
@@ -153,10 +153,18 @@ class SanteMesureController extends Controller
 
     public function destroy(SanteMesure $sante_mesure)
     {
-        $this->authorize('delete', $sante_mesure);
-        $sante_mesure->delete();
-        return redirect()->route('sante-mesures.index')
-            ->with('success', 'Mesure supprimée avec succès !');
+    
+     if ($sante_mesure->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+        abort(403, 'Accès non autorisé.');
+    }
+
+    $sante_mesure->delete();
+
+    if (auth()->user()->isAdmin()) {
+        return redirect()->route('sante-mesures.backIndex')->with('success', 'Mesure de santé supprimée !');
+    } else {
+        return redirect()->route('sante-mesures.index')->with('success', 'Mesure de snaté supprimée !');
+    }
     }
 
     public function exportPDF(Request $request)
@@ -196,4 +204,26 @@ class SanteMesureController extends Controller
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
+
+    public function backIndex()
+{
+    $sante_mesure = SanteMesure::latest()->paginate(10);
+    return view('sante-mesures.backIndex', [
+    'mesures' => $sante_mesure,
+    'activePage' => 'sante'
+]);
+
+}
+
+
+public function backShow(SanteMesure $sante_mesure)
+{
+    $this->authorize('view', $sante_mesure);
+
+        $recommendations = $sante_mesure->getRecommendations();
+        $alertes = $sante_mesure->needsAlert();
+        $regime = $sante_mesure->regime;
+
+    return view('sante-mesures.backShow', compact('sante_mesure', 'recommendations', 'alertes', 'regime'));
+}
 }

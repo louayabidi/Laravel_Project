@@ -10,6 +10,8 @@
             <a href="{{ route('foods.index') }}" class="text-secondary font-weight-bold text-xs">Foods</a>
             <a href="{{ route('meals.index') }}" class="text-secondary font-weight-bold text-xs">Meals</a>
             <a href="{{ route('habitudes.index') }}" class="text-secondary font-weight-bold text-xs">Habitudes</a>
+            <a href="{{ route('sante-mesures.index') }}" class="text-secondary font-weight-bold text-xs">Santé</a>
+
     
         </nav>
     </div>

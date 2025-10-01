@@ -82,11 +82,21 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white {{ $activePage == 'habitudes' ? 'active bg-gradient-primary' : '' }}" href="{{ route('habitudes.backIndex') }}">
+                <a class="nav-link text-white {{ $activePage == 'habitudes' ? 'active bg-gradient-primary' : '' }}"
+       href="{{ route('habitudes.backIndex') }}">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">list_alt</i>
+                        <i class="material-icons opacity-10">directions_run</i>
                     </div>
                     <span class="nav-link-text ms-1">Habitude de vie</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white {{ $activePage == 'sante' ? 'active bg-gradient-primary' : '' }}"
+                  href="{{ route('sante-mesures.backIndex') }}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">health_and_safety</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Santé</span>
                 </a>
             </li>
 
