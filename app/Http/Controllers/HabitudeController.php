@@ -97,13 +97,25 @@ class HabitudeController extends Controller
 public function backIndex()
 {
     $habitudes = Habitude::latest()->paginate(10);
-    return view('habitudes.backIndex', compact('habitudes'));
+
+    return view('habitudes.backIndex', [
+        'habitudes' => $habitudes,
+        'activePage' => 'habitudes' // <- nom unique pour Habitude de vie
+    ]);
 }
+
+
 
 public function backShow()
 {
     $habitudes = Habitude::latest()->paginate(10);
     return view('habitudes.backShow', compact('habitudes'));
 }
+
+public function user()
+{
+    return $this->belongsTo(User::class, 'user_id'); 
+}
+
 
 }
