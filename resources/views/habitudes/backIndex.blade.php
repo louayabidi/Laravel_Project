@@ -16,6 +16,7 @@
                                 <table class="table align-items-center mb-0">
                                     <thead>
                                         <tr>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Patient</th>
                                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
                                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Sommeil (h)</th>
                                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Eau (L)</th>
@@ -30,6 +31,16 @@
                                     <tbody>
                                         @foreach ($habitudes as $habitude)
                                             <tr>
+                                                <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="material-icons text-primary me-2">account_circle</i>
+                                                    <h6 class="mb-0 text-sm">{{ $habitude->user->name }}</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                                 <td>{{ $habitude->date_jour }}</td>
                                                 <td>{{ $habitude->sommeil_heures }}</td>
                                                 <td>{{ $habitude->eau_litres }}</td>

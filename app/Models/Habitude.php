@@ -24,4 +24,10 @@ class Habitude extends Model
         'temps_ecran_minutes',
         'cafe_cups',
     ];
+
+    public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+
 }
