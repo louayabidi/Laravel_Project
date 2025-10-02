@@ -12,14 +12,14 @@ class MealFoodController extends Controller
     public function index()
     {
         $mealFoods = MealFood::paginate(10);
-        return view('meal-foods.index', compact('mealFoods'))->with('activePage', 'meal-foods');
+        return view('alimentaire..meal-food.index', compact('mealFoods'))->with('activePage', 'alimentaire..meal-food');
     }
 
     public function create()
     {
         $meals = Meal::all();
         $foods = Food::all();
-        return view('meal-foods.create', compact('meals', 'foods'))->with('activePage', 'meal-foods');
+        return view('alimentaire..meal-food.create', compact('meals', 'foods'))->with('activePage', 'alimentaire..meal-food');
     }
 
     public function store(Request $request)
@@ -35,19 +35,19 @@ class MealFoodController extends Controller
         ]);
 
         MealFood::create($request->all());
-        return redirect()->route('meal-foods.index')->with('success', 'Meal Food created successfully.');
+        return redirect()->route('alimentaire..meal-food.index')->with('success', 'Meal Food created successfully.');
     }
 
     public function show(MealFood $mealFood)
     {
-        return view('meal-foods.show', compact('mealFood'))->with('activePage', 'meal-foods');
+        return view('alimentaire..meal-food.show', compact('mealFood'))->with('activePage', 'alimentaire..meal-food');
     }
 
     public function edit(MealFood $mealFood)
     {
         $meals = Meal::all();
         $foods = Food::all();
-        return view('meal-foods.edit', compact('mealFood', 'meals', 'foods'))->with('activePage', 'meal-foods');
+        return view('alimentaire..meal-food.edit', compact('mealFood', 'meals', 'foods'))->with('activePage', 'alimentaire..meal-food');
     }
 
     public function update(Request $request, MealFood $mealFood)
@@ -63,12 +63,12 @@ class MealFoodController extends Controller
         ]);
 
         $mealFood->update($request->all());
-        return redirect()->route('meal-foods.index')->with('success', 'Meal Food updated successfully.');
+        return redirect()->route('alimentaire..meal-food.index')->with('success', 'Meal Food updated successfully.');
     }
 
     public function destroy(MealFood $mealFood)
     {
         $mealFood->delete();
-        return redirect()->route('meal-foods.index')->with('success', 'Meal Food deleted successfully.');
+        return redirect()->route('alimentaire..meal-food.index')->with('success', 'Meal Food deleted successfully.');
     }
 }
