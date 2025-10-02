@@ -12,11 +12,11 @@ class TrackingController extends Controller
     {
         $userId = auth()->id() ?? 1;
         
-        // Get the latest food goal for the user
-        $goal = FoodGoal::where('user_id', $userId)->latest()->first();
+        // Get the active food goal for the user
+        $goal = FoodGoal::where('user_id', $userId)->where('is_active', true)->first();
         
         if (!$goal) {
-            return redirect()->route('goals.create')->with('error', 'Aucun objectif alimentaire n\'est défini. Veuillez en créer un.');
+            return redirect()->route('goals.create')->with('error', 'Aucun objectif alimentaire actif n\'est défini. Veuillez en créer un ou activer un objectif existant.');
         }
         
         // Get today's date
