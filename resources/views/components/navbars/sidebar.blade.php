@@ -99,6 +99,16 @@
                     <span class="nav-link-text ms-1">Santé</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link text-white {{ $activePage == 'sante' ? 'active bg-gradient-primary' : '' }}"
+                  href="{{ route('admin.index') }}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons">forum</i>
+
+                    </div>
+                    <span class="nav-link-text ms-1">Forum</span>
+                </a>
+            </li>
 
             <li class="nav-item">
                 <a class="nav-link text-white {{ $activePage == 'tables' ? 'active bg-gradient-primary' : '' }}"
