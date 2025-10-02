@@ -19,6 +19,7 @@ class FoodGoal extends Model
         'daily_protein',
         'daily_carbs',
         'daily_fat',
+        'is_active',
     ];
 
     public function user()
@@ -68,5 +69,18 @@ class FoodGoal extends Model
             'bmr' => round($bmr, 2),
             'daily_calories' => round($daily_calories, 2),
         ];
+    }
+
+    /**
+     * Set this goal as active and deactivate others for the same user.
+     *
+     * @return void
+     */
+    public function setAsActive()
+    {
+        // Deactivate all other goals for this user
+        self::where('user_id', $this->user_id)->where('id', '!=', $this->id)->update(['is_active' => false]);
+        // Activate this goal
+        $this->update(['is_active' => true]);
     }
 }

@@ -1,49 +1,95 @@
-<x-layout bodyClass="g-sidenav-show bg-gray-200">
-    <x-navbars.sidebar activePage="foods"></x-navbars.sidebar>
+
+<x-layout bodyClass="g-sidenav-show bg-gradient-to-br from-indigo-50 to-blue-200 min-h-screen">
+    <x-header.header></x-header.header>
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        <x-navbars.navs.auth titlePage="Foods"></x-navbars.navs.auth>
-        <div class="container-fluid py-4">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card my-4">
+        <x-navbars.navs.auth titlePage="Liste des Aliments"></x-navbars.navs.auth>
+        <div class="container-fluid py-8">
+            <!-- Hero Section -->
+            <div class="relative mb-8 overflow-hidden rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-white shadow-xl">
+                <div class="absolute inset-0 bg-[url('https://source.unsplash.com/random/1920x1080/?healthy-food')] opacity-20 bg-cover bg-center"></div>
+                <div class="relative z-10">
+                    <h2 class="text-4xl font-bold mb-2 animate__animated animate__fadeIn">Vos Aliments</h2>
+                    <p class="text-lg opacity-90">Gérez votre liste d'aliments pour un suivi nutritionnel précis !</p>
+                    <a href="{{ route('foods.create') }}" class="mt-4 inline-block bg-white text-blue-600 font-semibold py-3 px-6 rounded-full hover:bg-blue-100 transition-transform transform hover:scale-105">
+                        <i class="fas fa-plus mr-2"></i> Créer un nouvel aliment
+                    </a>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-10">
+                    <div class="card shadow-2xl border-0 bg-white/90 backdrop-blur-md">
                         <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                             <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                                <h6 class="text-white text-capitalize ps-3">Foods Table</h6>
+                                <h6 class="text-white text-capitalize ps-4">
+                                    <i class="fas fa-utensils mr-2"></i> Tableau des Aliments
+                                </h6>
                             </div>
                         </div>
-                        <div class="card-body px-0 pb-2">
-                            <div class="table-responsive p-0">
+                        <div class="card-body p-6">
+                            <div class="table-responsive">
                                 <table class="table align-items-center mb-0">
                                     <thead>
-                                        <tr>
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Category</th>
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Calories</th>
-                                            <th class="text-secondary opacity-7"></th>
+                                        <tr class="text-gray-600">
+                                            <th class="text-uppercase text-xs font-semibold opacity-80">Nom</th>
+                                            <th class="text-uppercase text-xs font-semibold opacity-80">Catégorie</th>
+                                            <th class="text-uppercase text-xs font-semibold opacity-80">Calories (kcal)</th>
+                                            <th class="text-uppercase text-xs font-semibold opacity-80">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($foods as $food)
-                                            <tr>
-                                                <td>{{ $food->name }}</td>
-                                                <td>{{ $food->category }}</td>
-                                                <td>{{ $food->calories }}</td>
-                                                <td class="align-middle">
-                                                    <a href="{{ route('foods.show', $food->id) }}" class="text-secondary font-weight-bold text-xs">Show</a>
-                                                    <a href="{{ route('foods.edit', $food->id) }}" class="text-secondary font-weight-bold text-xs">Edit</a>
-                                                    <form action="{{ route('foods.destroy', $food->id) }}" method="POST" style="display:inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-danger font-weight-bold text-xs" onclick="return confirm('Are you sure?')">Delete</button>
-                                                    </form>
+                                            <tr class="hover:bg-gray-50 transition-all duration-300">
+                                                <td class="px-4 py-3">
+                                                    <span class="text-sm">{{ $food->name }}</span>
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <span class="text-sm">{{ $food->category }}</span>
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <span class="text-sm">{{ $food->calories }}</span>
+                                                </td>
+                                                <td class="px-4 py-3 flex space-x-3 items-center">
+                                                    <a href="{{ route('foods.show', $food->id) }}" class="inline-flex items-center bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold text-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 transform hover:scale-105 transition-all duration-300 animate__animated animate__pulse animate__infinite animate__slower" data-bs-toggle="tooltip" title="Voir les détails" aria-label="Voir les détails de l'aliment">
+                                                        <i class="fas fa-eye mr-2"></i> Voir
+                                                    </a>
+                                                    <a href="{{ route('foods.edit', $food->id) }}" class="inline-flex items-center bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold text-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg hover:from-yellow-500 hover:to-yellow-700 transform hover:scale-105 transition-all duration-300 animate__animated animate__pulse animate__infinite animate__slower" data-bs-toggle="tooltip" title="Modifier l'aliment" aria-label="Modifier l'aliment">
+                                                        <i class="fas fa-edit mr-2"></i> Modifier
+                                                    </a>
+                                                    <button type="button" class="inline-flex items-center bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold text-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg hover:from-red-600 hover:to-red-800 transform hover:scale-105 transition-all duration-300 animate__animated animate__pulse animate__infinite animate__slower" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ $food->id }}" data-bs-toggle="tooltip" title="Supprimer l'aliment" aria-label="Supprimer l'aliment">
+                                                        <i class="fas fa-trash mr-2"></i> Supprimer
+                                                    </button>
+                                                    <!-- Delete Confirmation Modal -->
+                                                    <div class="modal fade" id="confirmDelete{{ $food->id }}" tabindex="-1" aria-labelledby="confirmDeleteLabel{{ $food->id }}" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="confirmDeleteLabel{{ $food->id }}">Confirmer la suppression</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    Êtes-vous sûr de vouloir supprimer l'aliment "{{ $food->name }}" ?
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                                    <form action="{{ route('foods.destroy', $food->id) }}" method="POST" class="inline">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
                             </div>
-                            {{ $foods->links() }}
-                            <a href="{{ route('foods.create') }}" class="btn bg-gradient-primary">Create New Food</a>
+                            <div class="mt-4">
+                                {{ $foods->links('pagination::tailwind') }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -52,4 +98,20 @@
         </div>
     </main>
     <x-plugins></x-plugins>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" integrity="sha512-c42qTSw/wPZ3/5LBzD+Bw5f7bSF2oxou6wEb+I/lqeaKV5FDIfMvvRp772y4jcJLKuGUOpbJMdg/BTl50fJYAw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Tailwind CSS CDN (for prototyping) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        // Initialize Tooltips and Modals (Bootstrap 5 compatible)
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(element => {
+            new bootstrap.Tooltip(element);
+        });
+    </script>
 </x-layout>
