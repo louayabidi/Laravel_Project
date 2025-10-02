@@ -27,7 +27,7 @@
                             <div class="col-md-4 mb-4">
                                 <div class="card h-100 shadow-sm">
                                     @if($badge->image)
-                                        <img src="{{ asset('storage/' . $badge->image) }}" class="card-img-top" alt="{{ $badge->name }}" style="height:200px; object-fit:cover;">
+                                        <img src="{{ asset('storage/' . $badge->image) }}" class="card-img-top" alt="{{ $badge->name }}" style="height:200px; object-fit:cover;" onClick="window.location='{{ route('badges.show', $badge->id) }}'">
                                     @endif
                                     <div class="card-body d-flex flex-column">
                                         <h5 class="card-title">{{ $badge->name }}</h5>

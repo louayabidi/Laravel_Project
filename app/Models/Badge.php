@@ -10,9 +10,13 @@ class Badge extends Model
     protected $fillable = ['name','title','description','image','criteria','badge_categorie_id'];
 
     // explicitly set the foreign key
-    public function badgeCategorie()
+    public function category()
     {
         return $this->belongsTo(BadgeCategorie::class, 'badge_categorie_id');
     }
+    public function users()
+{
+    return $this->belongsToMany(User::class, 'badge_user')->withTimestamps();
+}
 }
 
