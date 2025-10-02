@@ -61,29 +61,35 @@ class FoodController extends Controller
         return view('alimentaire.food.edit', compact('food'))->with('activePage', 'foods');
     }
 
-    public function update(Request $request, Food $food)
-    {
-        $request->validate([
-            'food_name' => 'required|string|max:255',
-        ]);
+public function update(Request $request, Food $food)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'category' => 'required|string|max:255',
+        'calories' => 'required|numeric',
+        'protein' => 'required|numeric',
+        'carbs' => 'required|numeric',
+        'fat' => 'required|numeric',
+        'sugar' => 'required|numeric',
+        'fiber' => 'required|numeric',
+        'is_custom' => 'nullable|boolean',
+    ]);
 
-        $nutrition = $this->nutritionService->getNutritionDetails($request->food_name, 100);
-        if (!$nutrition) {
-            return back()->withErrors(['food_name' => 'Impossible de récupérer les données nutritionnelles pour cet aliment.']);
-        }
+    $food->update([
+        'name' => $request->name,
+        'category' => $request->category,
+        'calories_per_gram' => $request->calories / 100,
+        'protein_per_gram' => $request->protein / 100,
+        'carbs_per_gram' => $request->carbs / 100,
+        'fat_per_gram' => $request->fat / 100,
+        'sugar_per_gram' => $request->sugar / 100,
+        'fiber_per_gram' => $request->fiber / 100,
+        'is_custom' => $request->has('is_custom'),
+    ]);
 
-        $food->update([
-            'name' => $nutrition['name'],
-            'calories_per_gram' => $nutrition['calories'] / 100,
-            'protein_per_gram' => $nutrition['protein'] / 100,
-            'carbs_per_gram' => $nutrition['carbs'] / 100,
-            'fat_per_gram' => $nutrition['fat'] / 100,
-            'sugar_per_gram' => $nutrition['sugar'] / 100,
-            'fiber_per_gram' => $nutrition['fiber'] / 100,
-        ]);
+    return redirect()->route('foods.index')->with('success', 'Aliment mis à jour avec succès.');
+}
 
-        return redirect()->route('foods.index')->with('success', 'Aliment mis à jour avec succès.');
-    }
 
     public function destroy(Food $food)
     {
