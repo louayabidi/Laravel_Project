@@ -8,6 +8,7 @@ use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\MealController;
 use App\Http\Controllers\AnalyticController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\MealFoodController;
 use App\Http\Controllers\HabitudeController;
 use App\Http\Controllers\FoodGoalController;
@@ -15,6 +16,11 @@ use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\NutritionController;
 use App\Http\Controllers\BadgeCategoryController;
 use App\Http\Controllers\BadgeController;
+use App\Http\Controllers\LikeController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\ReportController;
+
+
 
 // Root redirect
 Route::get('/', function () {
@@ -140,6 +146,23 @@ Route::resource('categories', BadgeCategoryController::class);
 Route::resource('badges', BadgeController::class);
 
 
+    // forum
+    Route::resource('posts', PostController::class);
 
+    Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+    Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
+    Route::get('/admin/posts/{post}', [PostController::class, 'show'])->name('admin.show');
 
+    Route::get('/admin/posts', [PostController::class, 'adminIndex'])->name('admin.index');
+
+    Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
+    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+    Route::get('/admin/posts/{post}/edit', [PostController::class, 'edit'])->name('admin.edit');
+
+    Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::post('/posts/{post}/hide', [PostController::class, 'hide'])->name('posts.hide');
+    Route::post('/posts/{post}/unhide', [PostController::class, 'unhide'])->name('posts.unhide');
+    Route::get('/admin/hidden-posts', [PostController::class, 'hiddenPosts'])->name('posts.hidden');
 });
