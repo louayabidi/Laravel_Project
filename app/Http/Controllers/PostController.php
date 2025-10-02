@@ -1,0 +1,212 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Post;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class PostController extends Controller
+{
+    /**
+     * Display a listing of posts
+     * - Admins see all posts with status
+     * - Regular users see only active posts
+     */
+    public function index()
+    {
+        if (Auth::check() && Auth::user()->isAdmin()) {
+            // Admin sees all posts with their status
+            $posts = Post::with('user')->latest()->paginate(10);
+        } else {
+            // Regular users see only active posts
+            $posts = Post::where('status', 'active')
+                ->with('user')
+                ->latest()
+                ->paginate(10);
+        }
+
+        return view('posts.index', compact('posts'));
+    }
+
+    /**
+     * Show the form for creating a new post
+     */
+    public function create()
+    {
+        return view('posts.create');
+    }
+
+    /**
+     * Store a newly created post
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|max:255',
+            'content' => 'required',
+            'media_url' => 'nullable|url',
+            'tags' => 'nullable|string|max:500' // Change to string validation
+        ]);
+
+        $post = Post::create([
+            'user_id' => Auth::id(),
+            'title' => $request->title,
+            'content' => $request->content,
+            'media_url' => $request->media_url,
+            'status' => 'active',
+            'tags' => $request->tags // Store as string directly
+        ]);
+
+        return redirect()->route('posts.show', $post->id)
+            ->with('success', 'Post created successfully!');
+    }
+
+    /**
+     * Display the specified post
+     */
+    public function show($id)
+    {
+        $post = Post::with(['user', 'comments', 'likes'])->findOrFail($id);
+
+        // Check if post is active or user is admin/owner
+        if (
+            $post->status !== 'active' &&
+            !(Auth::check() && (Auth::user()->isAdmin() || Auth::id() === $post->user_id))
+        ) {
+            abort(404);
+        }
+
+        return view('posts.show', compact('post'));
+    }
+
+    /**
+     * Show the form for editing the specified post
+     */
+    public function edit($id)
+    {
+        $post = Post::findOrFail($id);
+
+        // Only post owner or admin can edit
+        if (Auth::id() !== $post->user_id && !(Auth::check() && Auth::user()->isAdmin())) {
+            abort(403);
+        }
+
+        return view('posts.edit', compact('post'));
+    }
+
+    /**
+     * Update the specified post
+     */
+    public function update(Request $request, $id)
+    {
+        $post = Post::findOrFail($id);
+
+        // Only post owner or admin can update
+        if (Auth::id() !== $post->user_id && !(Auth::check() && Auth::user()->isAdmin())) {
+            abort(403);
+        }
+
+        $request->validate([
+            'title' => 'required|max:255',
+            'content' => 'required',
+            'media_url' => 'nullable|url',
+            'tags' => 'nullable|string|max:500' // Change to string validation
+        ]);
+
+        $post->update([
+            'title' => $request->title,
+            'content' => $request->content,
+            'media_url' => $request->media_url,
+            'tags' => $request->tags // Store as string directly
+        ]);
+
+        return redirect()->route('posts.show', $post->id)
+            ->with('success', 'Post updated successfully!');
+    }
+
+    /**
+     * Remove the specified post
+     */
+    public function destroy($id)
+    {
+        $post = Post::findOrFail($id);
+
+        // Only post owner or admin can delete
+        if (Auth::id() !== $post->user_id && !(Auth::check() && Auth::user()->isAdmin())) {
+            abort(403);
+        }
+
+        $post->delete();
+
+        return redirect()->route('posts.index')
+            ->with('success', 'Post deleted successfully!');
+    }
+
+    /**
+     * Admin function to hide a post
+     */
+    public function hide($id)
+    {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403);
+        }
+
+        $post = Post::findOrFail($id);
+        $post->update(['status' => 'hidden']);
+
+        return redirect()->back()->with('success', 'Post hidden successfully!');
+    }
+
+    /**
+     * Admin function to unhide a post
+     */
+    public function unhide($id)
+    {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403);
+        }
+
+        $post = Post::findOrFail($id);
+        $post->update(['status' => 'active']);
+
+        return redirect()->back()->with('success', 'Post unhidden successfully!');
+    }
+
+    /**
+     * Admin function to view hidden posts
+     */
+    public function hiddenPosts()
+    {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403);
+        }
+
+        $posts = Post::where('status', 'hidden')
+            ->with('user')
+            ->latest()
+            ->paginate(10);
+
+        return view('posts.hidden', compact('posts'));
+    }
+    public function adminIndex(Request $request)
+{
+    // Get the status filter from the request
+    $status = $request->query('status', 'all');
+    
+    // Start building the query
+    $query = Post::with('user');
+    
+    // Apply filter if not 'all'
+    if ($status === 'active') {
+        $query->where('status', 'active');
+    } elseif ($status === 'hidden') {
+        $query->where('status', 'hidden');
+    }
+    // If status is 'all', no additional where clause is needed
+    
+    $posts = $query->latest()->paginate(12);
+    
+    return view('admin.index', compact('posts'));
+}
+}
