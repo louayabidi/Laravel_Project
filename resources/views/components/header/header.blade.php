@@ -36,6 +36,11 @@
                 <i class="fas fa-medal fa-sm"></i>
                 <span>Badges</span>
             </a>
+            <a href="{{ route('posts.index') }}" class="text-dark font-weight-bold text-sm text-decoration-none d-flex align-items-center gap-1">
+                <i class="fas fa-comments fa-sm"></i>
+
+                <span>Forum</span>
+            </a>
         </nav>
 
         <!-- Espace pour éventuels éléments à droite (profil, etc.) -->
