@@ -72,7 +72,7 @@ class SanteMesureController extends Controller
             'tension_diastolique' => 'required|integer|between:40,150',
             'remarque' => 'nullable|string|max:1000',
             'regime_id' => 'nullable|exists:regimes,id',
-            'type_regime' => 'required_if:regime_id,null|in:Fitnesse,musculation,prise_de_poids',
+            'type_regime' => 'required_if:regime_id,null|in:Diabète,Hypertension,Grossesse,Cholestérol élevé (hypercholestérolémie),Maladie cœliaque (intolérance au gluten),Insuffisance rénale',
             'valeur_cible' => 'required_if:regime_id,null|numeric',
             'description' => 'nullable|string|max:1000'
         ]);
@@ -122,7 +122,7 @@ class SanteMesureController extends Controller
             'tension_diastolique' => 'required|integer|between:40,150',
             'remarque' => 'nullable|string|max:1000',
             'regime_id' => 'nullable|exists:regimes,id',
-            'type_regime' => 'required_if:regime_id,null|in:Fitnesse,musculation,prise_de_poids',
+            'type_regime' => 'required_if:regime_id,null|in:Diabète,Hypertension,Grossesse,Cholestérol élevé (hypercholestérolémie),Maladie cœliaque (intolérance au gluten),Insuffisance rénale',
             'valeur_cible' => 'required_if:regime_id,null|numeric',
             'description' => 'nullable|string|max:1000'
         ]);
@@ -153,7 +153,7 @@ class SanteMesureController extends Controller
 
     public function destroy(SanteMesure $sante_mesure)
     {
-    
+
      if ($sante_mesure->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
         abort(403, 'Accès non autorisé.');
     }
