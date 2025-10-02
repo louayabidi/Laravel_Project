@@ -13,6 +13,9 @@ use App\Http\Controllers\HabitudeController;
 use App\Http\Controllers\FoodGoalController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\NutritionController;
+use App\Http\Controllers\BadgeCategoryController;
+use App\Http\Controllers\BadgeController;
+
 // Root redirect
 Route::get('/', function () {
     return redirect()->route('login');
@@ -34,7 +37,7 @@ Route::get('/', fn() => redirect()->route('login'))->middleware('guest');
 Route::get('sign-up', [RegisterController::class, 'create'])->middleware('guest')->name('register');
 Route::post('sign-up', [RegisterController::class, 'store'])->middleware('guest');
 
-Route::get('sign-in', [SessionsController::class, 'create'])->middleware('guest')->name('login'); 
+Route::get('sign-in', [SessionsController::class, 'create'])->middleware('guest')->name('login');
 Route::post('sign-in', [SessionsController::class, 'store'])->middleware('guest');
 
 Route::post('verify', [SessionsController::class, 'show'])->middleware('guest');
@@ -74,7 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::view('user-management', 'pages.laravel-examples.user-management')->name('user-management');
     Route::view('user-profile', 'pages.laravel-examples.user-profile')->name('user-profile');
 
-   // gestion alimentaire 
+   // gestion alimentaire
 
     /*
     |--------------------------------------------------------------------------
@@ -129,5 +132,11 @@ Route::resource('meal-foods', MealFoodController::class);
 Route::resource('goals', FoodGoalController::class);
 Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
 Route::get('/food-suggestions', [App\Http\Controllers\MealFoodController::class, 'suggestions'])->name('food.suggestions');
+
+Route::resource('categories', BadgeCategoryController::class);
+Route::resource('badges', BadgeController::class);
+
+
+
 
 });

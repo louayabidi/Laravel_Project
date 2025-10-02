@@ -35,7 +35,7 @@
                     <span class="nav-link-text ms-1">User Management</span>
                 </a>
             </li>
-            
+
             <li class="nav-item mt-3">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Pages</h6>
             </li>
@@ -119,15 +119,15 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link text-white {{ $activePage == 'tables' ? 'active bg-gradient-primary' : '' }}"
-                    href="{{ route('tables') }}">
+                <a class="nav-link text-white {{ $activePage == 'category' ? 'active bg-gradient-primary' : '' }}" href="{{ route('categories.store') }}">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">table_view</i>
+                        <i class="material-icons opacity-10">emoji_events</i>
+
                     </div>
-                    <span class="nav-link-text ms-1">Tables</span>
+                    <span class="nav-link-text ms-1">Badges</span>
                 </a>
             </li>
-        
+
 
         </ul>
     </div>
