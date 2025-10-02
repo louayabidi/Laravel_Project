@@ -20,4 +20,35 @@ class Food extends Model
         'sugar_per_gram',
         'fiber_per_gram',
     ];
+
+
+    public function getCaloriesAttribute()
+    {
+        return $this->calories_per_gram * 100;
+    }
+
+    public function getProteinAttribute()
+    {
+        return $this->protein_per_gram * 100;
+    }
+
+    public function getCarbsAttribute()
+    {
+        return $this->carbs_per_gram * 100;
+    }
+
+    public function getFatAttribute()
+    {
+        return $this->fat_per_gram * 100;
+    }
+
+    public function getSugarAttribute()
+    {
+        return $this->sugar_per_gram * 100;
+    }
+
+    public function getFiberAttribute()
+    {
+        return $this->fiber_per_gram * 100;
+    }
 }

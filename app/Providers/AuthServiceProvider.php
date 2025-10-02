@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use App\Models\ActivityLog;
+use App\Policies\ActivityLogPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -14,6 +16,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         'App\Models\SanteMesure' => 'App\Policies\SanteMesurePolicy',
+         ActivityLog::class => ActivityLogPolicy::class,
     ];
 
     /**
