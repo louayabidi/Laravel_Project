@@ -65,6 +65,8 @@ Route::middleware('auth')->group(function () {
 
     // Profile & logout
     Route::get('profile', [ProfileController::class, 'create'])->name('profile');
+
+
     Route::post('user-profile', [ProfileController::class, 'update']);
     Route::post('sign-out', [SessionsController::class, 'destroy'])->name('logout');
 
@@ -76,6 +78,7 @@ Route::middleware('auth')->group(function () {
     Route::view('tables', 'pages.tables')->name('tables');
     Route::view('user-management', 'pages.laravel-examples.user-management')->name('user-management');
     Route::view('user-profile', 'pages.laravel-examples.user-profile')->name('user-profile');
+    //Route::view('profile', 'pages.profile')->name('profile');
 
    // gestion alimentaire
 

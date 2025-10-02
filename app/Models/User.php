@@ -62,7 +62,7 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        
+
         return $this->role === 'admin';
     }
 
@@ -74,5 +74,9 @@ class User extends Authenticatable
 {
     return $this->hasMany(Habitude::class);
 
+}
+public function badges()
+{
+    return $this->belongsToMany(Badge::class, 'badge_user')->withTimestamps();
 }
 }
