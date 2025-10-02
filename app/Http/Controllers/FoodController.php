@@ -3,10 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Food;
+use App\Services\NutritionService;
 use Illuminate\Http\Request;
 
 class FoodController extends Controller
 {
+    protected $nutritionService;
+
+    public function __construct(NutritionService $nutritionService)
+    {
+        $this->nutritionService = $nutritionService;
+    }
+
     public function index()
     {
         $foods = Food::paginate(10);
@@ -21,19 +29,26 @@ class FoodController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
-            'category' => 'required|string',
-            'calories' => 'required|numeric',
-            'protein' => 'required|numeric',
-            'carbs' => 'required|numeric',
-            'fat' => 'required|numeric',
-            'sugar' => 'required|numeric',
-            'fiber' => 'required|numeric',
-            'is_custom' => 'boolean',
+            'food_name' => 'required|string|max:255',
         ]);
 
-        Food::create($request->all());
-        return redirect()->route('foods.index')->with('success', 'Food created successfully.');
+        // Fetch nutritional data from API (assuming 100g for per-gram calculations)
+        $nutrition = $this->nutritionService->getNutritionDetails($request->food_name, 100);
+        if (!$nutrition) {
+            return back()->withErrors(['food_name' => 'Impossible de récupérer les données nutritionnelles pour cet aliment.']);
+        }
+
+        Food::create([
+            'name' => $nutrition['name'],
+            'calories_per_gram' => $nutrition['calories'] / 100,
+            'protein_per_gram' => $nutrition['protein'] / 100,
+            'carbs_per_gram' => $nutrition['carbs'] / 100,
+            'fat_per_gram' => $nutrition['fat'] / 100,
+            'sugar_per_gram' => $nutrition['sugar'] / 100,
+            'fiber_per_gram' => $nutrition['fiber'] / 100,
+        ]);
+
+        return redirect()->route('foods.index')->with('success', 'Aliment créé avec succès.');
     }
 
     public function show(Food $food)
@@ -49,24 +64,39 @@ class FoodController extends Controller
     public function update(Request $request, Food $food)
     {
         $request->validate([
-            'name' => 'required|string',
-            'category' => 'required|string',
-            'calories' => 'required|numeric',
-            'protein' => 'required|numeric',
-            'carbs' => 'required|numeric',
-            'fat' => 'required|numeric',
-            'sugar' => 'required|numeric',
-            'fiber' => 'required|numeric',
-            'is_custom' => 'boolean',
+            'food_name' => 'required|string|max:255',
         ]);
 
-        $food->update($request->all());
-        return redirect()->route('foods.index')->with('success', 'Food updated successfully.');
+        $nutrition = $this->nutritionService->getNutritionDetails($request->food_name, 100);
+        if (!$nutrition) {
+            return back()->withErrors(['food_name' => 'Impossible de récupérer les données nutritionnelles pour cet aliment.']);
+        }
+
+        $food->update([
+            'name' => $nutrition['name'],
+            'calories_per_gram' => $nutrition['calories'] / 100,
+            'protein_per_gram' => $nutrition['protein'] / 100,
+            'carbs_per_gram' => $nutrition['carbs'] / 100,
+            'fat_per_gram' => $nutrition['fat'] / 100,
+            'sugar_per_gram' => $nutrition['sugar'] / 100,
+            'fiber_per_gram' => $nutrition['fiber'] / 100,
+        ]);
+
+        return redirect()->route('foods.index')->with('success', 'Aliment mis à jour avec succès.');
     }
 
     public function destroy(Food $food)
     {
         $food->delete();
-        return redirect()->route('foods.index')->with('success', 'Food deleted successfully.');
+        return redirect()->route('foods.index')->with('success', 'Aliment supprimé avec succès.');
+    }
+
+    public function suggestions(Request $request)
+    {
+        $query = $request->query('q', '');
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+        return response()->json($this->nutritionService->searchFoods($query));
     }
 }

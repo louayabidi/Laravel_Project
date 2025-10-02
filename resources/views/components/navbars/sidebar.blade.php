@@ -65,6 +65,24 @@
                     <span class="nav-link-text ms-1">Meals</span>
                 </a>
             </li>
+
+        <li class="nav-item">
+                <a class="nav-link text-white {{ $activePage == 'goals' ? 'active bg-gradient-primary' : '' }}"
+                    href="{{ route('goals.index') }}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">fitness_center</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Food Goal</span>
+                </a>
+            </li>
+
+
+            <li class="nav-item">
+             <a class="nav-link {{ $activePage == 'tracking' ? 'active' : '' }}" href="{{ route('tracking.index') }}">
+             <i class="material-icons opacity-10">track_changes</i>
+                 <span class="nav-link-text ms-1">Suivi Quotidien</span>
+             </a>
+                    </li>
             <li class="nav-item">
                 <a class="nav-link text-white {{ $activePage == 'analytics' ? 'active bg-gradient-primary' : '' }}" href="{{ route('analytics.index') }}">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
