@@ -1,5 +1,5 @@
 <x-layout bodyClass="g-sidenav-show bg-gray-200">
-    <x-navbars.sidebar activePage="meal-foods"></x-navbars.sidebar>
+    <x-header.header></x-header.header>
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <x-navbars.navs.auth titlePage="Détails de l'Aliment de Repas"></x-navbars.navs.auth>
         <div class="container-fluid py-4">
