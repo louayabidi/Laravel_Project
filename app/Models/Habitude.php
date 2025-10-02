@@ -14,7 +14,7 @@ class Habitude extends Model
     protected $keyType = 'int'; 
 
     protected $fillable = [
-        'user_id',
+        'objectif_id',
         'date_jour',
         'sommeil_heures',
         'eau_litres',
@@ -25,9 +25,11 @@ class Habitude extends Model
         'cafe_cups',
     ];
 
-    public function user()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
+    
+
+public function objectif()
+    {
+        return $this->belongsTo(Objectif::class, 'objectif_id', 'id');
+    }
 
 }
