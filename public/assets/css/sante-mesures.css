@@ -1,0 +1,156 @@
+/* Styles spécifiques pour le module de suivi santé */
+
+/* Cards avec animation au survol */
+.card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour les graphiques */
+.card-chart {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-chart .card-header {
+    padding: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.chart-canvas {
+    height: 250px !important;
+}
+
+/* Styles pour les tableaux */
+.table thead th {
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-top-width: 0;
+    border-bottom-width: 1px;
+    text-transform: uppercase;
+    letter-spacing: 0.025rem;
+}
+
+.table tbody tr {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+}
+
+/* Styles pour les formulaires */
+.form-control {
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #9c27b0;
+    box-shadow: 0 0 0 0.2rem rgba(156, 39, 176, 0.25);
+}
+
+/* Styles pour les badges et indicateurs */
+.health-status {
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 700;
+    border-radius: 0.25rem;
+}
+
+.health-status.normal {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.health-status.warning {
+    background-color: #FFC107;
+    color: #343a40;
+}
+
+.health-status.alert {
+    background-color: #F44336;
+    color: white;
+}
+
+/* Animations pour les alertes */
+.alert {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Style pour les recommandations */
+.recommendation-item {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid #9c27b0;
+    background-color: rgba(156, 39, 176, 0.1);
+}
+
+/* Styles pour les boutons d'action */
+.btn-floating {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    margin: 0.375rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-floating:hover {
+    transform: scale(1.1);
+}
+
+.btn-floating i {
+    font-size: 1.25rem;
+}
+
+/* Styles pour les inputs numériques */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Style pour l'IMC calculé */
+#imc_display {
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .card-chart {
+        margin-bottom: 1rem;
+    }
+    
+    .chart-canvas {
+        height: 200px !important;
+    }
+    
+    .table-responsive {
+        margin-bottom: 1rem;
+    }
+}
