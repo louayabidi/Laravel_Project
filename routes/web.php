@@ -18,65 +18,110 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->middleware('guest');
 
+use App\Http\Controllers\SanteMesureController;
+use App\Http\Controllers\ObjectifController;
+
+/*
+|--------------------------------------------------------------------------
+| Routes publiques / guest
+|--------------------------------------------------------------------------
+*/
+
+// Redirection root vers login
+Route::get('/', fn() => redirect()->route('login'))->middleware('guest');
 
 // Authentication routes
 Route::get('sign-up', [RegisterController::class, 'create'])->middleware('guest')->name('register');
 Route::post('sign-up', [RegisterController::class, 'store'])->middleware('guest');
 
-Route::get('sign-in', [SessionsController::class, 'create'])
-    ->middleware('guest')
-    //->name('sign-in');
-    ->name('login'); 
+Route::get('sign-in', [SessionsController::class, 'create'])->middleware('guest')->name('login'); 
+Route::post('sign-in', [SessionsController::class, 'store'])->middleware('guest');
 
-Route::post('sign-in', [SessionsController::class, 'store'])
-    ->middleware('guest');
 Route::post('verify', [SessionsController::class, 'show'])->middleware('guest');
 Route::post('reset-password', [SessionsController::class, 'update'])->middleware('guest')->name('password.update');
 
-Route::get('verify', function () {
-    return view('sessions.password.verify');
-})->middleware('guest')->name('verify');
+Route::get('verify', fn() => view('sessions.password.verify'))->middleware('guest')->name('verify');
 
-Route::get('/reset-password/{token}', function ($token) {
-    return view('sessions.password.reset', ['token' => $token]);
-})->middleware('guest')->name('password.reset');
+Route::get('/reset-password/{token}', fn($token) => view('sessions.password.reset', ['token' => $token]))
+    ->middleware('guest')->name('password.reset');
 
-// Dashboard route
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware('auth')
-    ->name('dashboard');
-   
-// Profile & logout
-Route::post('sign-out', [SessionsController::class, 'destroy'])->middleware('auth')->name('logout');
-Route::get('profile', [ProfileController::class, 'create'])->middleware('auth')->name('profile');
-Route::post('user-profile', [ProfileController::class, 'update'])->middleware('auth');
+/*
+|--------------------------------------------------------------------------
+| Routes protégées / auth
+|--------------------------------------------------------------------------
+*/
+// Back-office admin : Objectifs + Habitudes
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('objectifs-habitudes', [ObjectifController::class, 'backIndex'])->name('admin.objectifs.habitudes');
+});
 
-// Example pages (billing, tables, etc.)
-Route::group(['middleware' => 'auth'], function () {
-    Route::get('billing', fn() => view('pages.billing'))->name('billing');
-    Route::get('tables', fn() => view('pages.tables'))->name('tables');
-    Route::get('rtl', fn() => view('pages.rtl'))->name('rtl');
-    Route::get('virtual-reality', fn() => view('pages.virtual-reality'))->name('virtual-reality');
-    Route::get('notifications', fn() => view('pages.notifications'))->name('notifications');
-    Route::get('static-sign-in', fn() => view('pages.static-sign-in'))->name('static-sign-in');
-    Route::get('static-sign-up', fn() => view('pages.static-sign-up'))->name('static-sign-up');
-    Route::get('user-management', fn() => view('pages.laravel-examples.user-management'))->name('user-management');
-    Route::get('user-profile', fn() => view('pages.laravel-examples.user-profile'))->name('user-profile');
-    
-    // Route back/admin en premier
-Route::get('habitudes/back', [HabitudeController::class, 'backIndex'])
-    ->name('habitudes.backIndex');
+Route::middleware('auth')->group(function () {
 
-// Routes front pour les utilisateurs (CRUD)
-Route::resource('habitudes', HabitudeController::class)
-    ->except(['index']); // index normal sera séparé
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-// Route index utilisateur
-Route::get('habitudes', [HabitudeController::class, 'index'])
-    ->name('habitudes.index');
+    // Profile & logout
+    Route::get('profile', [ProfileController::class, 'create'])->name('profile');
+    Route::post('user-profile', [ProfileController::class, 'update']);
+    Route::post('sign-out', [SessionsController::class, 'destroy'])->name('logout');
 
+    /*
+    |--------------------------------------------------------------------------
+    | Pages exemples
+    |--------------------------------------------------------------------------
+    */
+    Route::view('tables', 'pages.tables')->name('tables');
+    Route::view('user-management', 'pages.laravel-examples.user-management')->name('user-management');
+    Route::view('user-profile', 'pages.laravel-examples.user-profile')->name('user-profile');
 
    // gestion alimentaire 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Objectifs & Habitudes
+    |--------------------------------------------------------------------------
+    */
+
+    // Objectifs
+    Route::resource('objectifs', ObjectifController::class);
+    Route::get('/objectifs/{id}', [ObjectifController::class, 'show'])->name('objectifs.show');
+    Route::delete('/objectifs/{id}', [ObjectifController::class, 'destroy'])->name('objectifs.destroy');
+
+    // Habitudes générales
+    Route::get('/habitudes', [HabitudeController::class, 'index'])->name('habitudes.index');
+
+    // Habitudes CRUD classiques
+    Route::put('/habitudes/{habitude}', [HabitudeController::class, 'update'])->name('habitudes.update');
+    Route::delete('/habitudes/{habitude}', [HabitudeController::class, 'destroy'])->name('habitudes.destroy');
+    Route::get('/habitudes/{habitude}', [HabitudeController::class, 'show'])->name('habitudes.show');
+
+    // Habitudes "back/admin"
+    Route::get('habitudes/back', [HabitudeController::class, 'backIndex'])->name('habitudes.backIndex');
+    // Habitudes liées à un objectif
+    Route::prefix('objectifs/{objectif}/habitudes')->group(function () {
+        Route::get('/', [HabitudeController::class, 'indexByObjectif'])->name('objectifs.habitudes.index');
+        Route::get('create', [HabitudeController::class, 'create'])->name('objectifs.habitudes.create');
+        Route::post('/', [HabitudeController::class, 'store'])->name('objectifs.habitudes.store');
+        Route::get('{habitude}/edit', [HabitudeController::class, 'edit'])->name('objectifs.habitudes.edit');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Santé Mesures
+    |--------------------------------------------------------------------------
+    */
+    Route::get('sante-mesures/back', [SanteMesureController::class, 'backIndex'])->name('sante-mesures.backIndex');
+    Route::get('sante-mesures/back/{sante_mesure}', [SanteMesureController::class, 'backShow'])->name('sante-mesures.backShow');
+
+    Route::resource('sante-mesures', SanteMesureController::class)->except(['index']);
+    Route::get('sante-mesures', [SanteMesureController::class, 'index'])->name('sante-mesures.index');
+    Route::get('sante-mesures/export/pdf', [SanteMesureController::class, 'exportPDF'])->name('sante-mesures.export.pdf');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Gestion alimentaire
+    |--------------------------------------------------------------------------
+    */
 Route::resource('foods', FoodController::class);
 Route::resource('meals', MealController::class);
 Route::resource('analytics', AnalyticController::class);
@@ -84,8 +129,5 @@ Route::resource('meal-foods', MealFoodController::class);
 Route::resource('goals', FoodGoalController::class);
 Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
 Route::get('/food-suggestions', [App\Http\Controllers\MealFoodController::class, 'suggestions'])->name('food.suggestions');
-
-
-
 
 });
