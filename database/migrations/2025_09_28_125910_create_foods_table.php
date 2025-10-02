@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('foods', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('category');
+            $table->string('category')->nullable()->change();
             $table->float('calories');
             $table->float('protein');
             $table->float('carbs');

@@ -2,17 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MealFood extends Model
 {
-    use HasFactory;
-
-    protected $table = 'meal_foods';
+    protected $table = 'meal_foods'; 
 
     protected $fillable = [
-        'meal_id', 'food_id', 'quantity', 'calories_total', 'protein_total', 'carbs_total', 'fat_total'
+        'meal_id',
+        'food_id',
+        'quantity',
+        'calories_total',
+        'protein_total',
+        'carbs_total',
+        'fat_total',
+        'sugar_total',
+        'fiber_total',
     ];
 
     public function meal()
