@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Badge;
 use Illuminate\Http\Request;
 use App\Models\BadgeCategorie;
-
+use Illuminate\Support\Facades\Auth;
 class BadgeController extends Controller
 {
     /**
@@ -13,7 +13,13 @@ class BadgeController extends Controller
      */
     public function index()
     {
-        //
+        // Fetch all badges with their categories
+        //pass the connected user
+         $user = Auth::user();
+        $badges = Badge::with('category')->get();
+        return view('gamification.badge.index', compact('badges', 'user'))
+            ->with('activePage', 'badges');
+
     }
 
     /**
@@ -61,7 +67,9 @@ class BadgeController extends Controller
      */
     public function show(Badge $badge)
     {
-        //
+        // show badge
+        return view('gamification.badge.show', compact('badge'))
+            ->with('activePage', 'badges');
     }
 
     /**

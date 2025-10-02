@@ -8,6 +8,10 @@
 
         <!-- Navigation centrale -->
         <nav class="d-flex gap-4 align-items-center">
+            <a href="{{ route('profile') }}" class="text-dark font-weight-bold text-sm text-decoration-none d-flex align-items-center gap-1">
+                <i class="fas fa-user fa-sm"></i>
+                <span>Profile</span>
+            </a>
             <a href="{{ route('dashboard') }}" class="text-dark font-weight-bold text-sm text-decoration-none d-flex align-items-center gap-1">
                 <i class="fas fa-home fa-sm"></i>
                 <span>Accueil</span>
@@ -27,6 +31,10 @@
             <a href="{{ route('sante-mesures.index') }}" class="text-dark font-weight-bold text-sm text-decoration-none d-flex align-items-center gap-1">
                 <i class="fas fa-heartbeat fa-sm"></i>
                 <span>Santé</span>
+            </a>
+            <a href="{{ route('badges.index') }}" class="text-dark font-weight-bold text-sm text-decoration-none d-flex align-items-center gap-1">
+                <i class="fas fa-medal fa-sm"></i>
+                <span>Badges</span>
             </a>
         </nav>
 
