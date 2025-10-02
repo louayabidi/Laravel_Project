@@ -14,6 +14,13 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
+     * The allowed values for the type_regime field.
+     *
+     * @var array
+     */
+    const TYPE_REGIME_ENUM = ['Fitnesse', 'musculation', 'prise_de_poids'];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var string[]
@@ -47,7 +54,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    
+
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = bcrypt($password);
@@ -59,4 +66,13 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    public function santeMesures()
+{
+    return $this->hasMany(SanteMesure::class);
+}
+    public function habitudes()
+{
+    return $this->hasMany(Habitude::class);
+
+}
 }
