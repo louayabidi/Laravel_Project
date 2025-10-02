@@ -14,30 +14,46 @@
                         <div class="card-body">
                             <p><strong>Type:</strong> {{ ucfirst($meal->type) }}</p>
                             <p><strong>Date:</strong> {{ $meal->date }}</p>
-                            <h6>Foods</h6>
+                            <h6>Foods ({{ $meal->mealFoods->count() }})</h6>
                             <table class="table align-items-center mb-0">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>Quantity</th>
-                                        <th>Calories Total</th>
-                                        <th>Protein Total</th>
-                                        <th>Carbs Total</th>
-                                        <th>Fat Total</th>
+                                        <th>Quantity (g)</th>
+                                        <th>Calories</th>
+                                        <th>Protein (g)</th>
+                                        <th>Carbs (g)</th>
+                                        <th>Fat (g)</th>
+                                        <th>Sugar (g)</th>
+                                        <th>Fiber (g)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($meal->mealFoods as $mealFood)
                                         <tr>
-                                            <td>{{ $mealFood->food->name }}</td>
+                                            <td>{{ $mealFood->food->name ?? 'N/A' }}</td>
                                             <td>{{ $mealFood->quantity }}</td>
                                             <td>{{ $mealFood->calories_total }}</td>
                                             <td>{{ $mealFood->protein_total }}</td>
                                             <td>{{ $mealFood->carbs_total }}</td>
                                             <td>{{ $mealFood->fat_total }}</td>
+                                            <td>{{ $mealFood->sugar_total ?? 'N/A' }}</td>
+                                            <td>{{ $mealFood->fiber_total ?? 'N/A' }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td><strong>Totals</strong></td>
+                                        <td></td>
+                                        <td><strong>{{ $totals['calories'] }}</strong></td>
+                                        <td><strong>{{ $totals['protein'] }}</strong></td>
+                                        <td><strong>{{ $totals['carbs'] }}</strong></td>
+                                        <td><strong>{{ $totals['fat'] }}</strong></td>
+                                        <td><strong>{{ $totals['sugar'] }}</strong></td>
+                                        <td><strong>{{ $totals['fiber'] }}</strong></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                             <a href="{{ route('meals.index') }}" class="btn bg-gradient-primary">Back</a>
                         </div>

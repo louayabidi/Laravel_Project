@@ -10,8 +10,9 @@ use App\Http\Controllers\MealController;
 use App\Http\Controllers\AnalyticController;
 use App\Http\Controllers\MealFoodController;
 use App\Http\Controllers\HabitudeController;
-
-
+use App\Http\Controllers\FoodGoalController;
+use App\Http\Controllers\TrackingController;
+use App\Http\Controllers\NutritionController;
 // Root redirect
 Route::get('/', function () {
     return redirect()->route('login');
@@ -80,6 +81,9 @@ Route::resource('foods', FoodController::class);
 Route::resource('meals', MealController::class);
 Route::resource('analytics', AnalyticController::class);
 Route::resource('meal-foods', MealFoodController::class);
+Route::resource('goals', FoodGoalController::class);
+Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
+Route::get('/food-suggestions', [App\Http\Controllers\MealFoodController::class, 'suggestions'])->name('food.suggestions');
 
 
 

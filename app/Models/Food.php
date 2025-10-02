@@ -7,17 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Food extends Model
 {
-
-
-    protected $table = 'foods';
     use HasFactory;
 
-    protected $fillable = [
-        'name', 'category', 'calories', 'protein', 'carbs', 'fat', 'sugar', 'fiber', 'is_custom'
-    ];
+    protected $table = 'foods';
 
-    public function mealFoods()
-    {
-        return $this->hasMany(MealFood::class);
-    }
+    protected $fillable = [
+        'name',
+        'calories_per_gram',
+        'protein_per_gram',
+        'carbs_per_gram',
+        'fat_per_gram',
+        'sugar_per_gram',
+        'fiber_per_gram',
+    ];
 }
