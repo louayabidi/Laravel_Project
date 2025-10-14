@@ -170,4 +170,10 @@ Route::resource('badges', BadgeController::class);
     Route::post('/posts/{post}/hide', [PostController::class, 'hide'])->name('posts.hide');
     Route::post('/posts/{post}/unhide', [PostController::class, 'unhide'])->name('posts.unhide');
     Route::get('/admin/hidden-posts', [PostController::class, 'hiddenPosts'])->name('posts.hidden');
+
+    Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    Route::post('/comments/{comment}/like', [LikeController::class, 'toggleCommentLike'])->name('comments.like');
 });
