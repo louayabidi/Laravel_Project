@@ -1,239 +1,121 @@
-@php use Illuminate\Support\Str; @endphp
 <x-layout bodyClass="g-sidenav-show bg-gray-200">
     <x-header.header></x-header.header>
+
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        <x-navbars.navs.auth titlePage="Post Details"></x-navbars.navs.auth>
+        <x-navbars.navs.auth titlePage="{{ $post->title }}"></x-navbars.navs.auth>
 
         <div class="container-fluid py-4">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card my-4">
-                        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                            <div
-                                class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center px-3">
-                                <h6 class="text-white text-capitalize ps-3">Post Details</h6>
-                                <div>
-                                    <a href="{{ route('posts.index') }}" class="btn btn-sm btn-light">
-                                        <i class="material-icons">arrow_back</i> Back
-                                    </a>
-                                    @if(auth()->id() === $post->user_id || auth()->user()->isAdmin())
-                                        <a href="{{ route('posts.edit', $post) }}" class="btn btn-sm btn-info">
-                                            <i class="material-icons">edit</i> Edit
-                                        </a>
-                                    @endif
-                                </div>
-                            </div>
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h4 class="mb-3">{{ $post->title }}</h4>
+                    <p class="text-muted small mb-2">By {{ $post->user->name }} • {{ $post->created_at->diffForHumans() }}</p>
+                    <div class="mb-3">{!! nl2br(e($post->content)) !!}</div>
+
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#reportPostModal">
+                            <i class="material-icons text-sm">flag</i> Report Post
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="text-primary mb-3">Comments ({{ $post->comments->count() }})</h5>
+
+                    <form action="{{ route('comments.store', $post) }}" method="POST" class="mb-4">
+                        @csrf
+                        <textarea name="content" class="form-control mb-2" rows="3" placeholder="Add a comment..." required></textarea>
+                        <button type="submit" class="btn btn-primary btn-sm">Comment</button>
+                    </form>
+
+                    @php
+                        $comments = $post->comments()->withCount('likes')->orderByDesc('likes_count')->get();
+                    @endphp
+
+                    @foreach($comments as $comment)
+                    <div class="border p-3 rounded mb-3">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ $comment->user->name }}</strong>
+                            <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
                         </div>
+                        <p class="mt-2 mb-2">{{ $comment->content }}</p>
 
-                        <div class="card-body px-0 pb-2">
-                            <div class="p-3">
-                                @if(session('success'))
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                        {{ session('success') }}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                            aria-label="Close"></button>
-                                    </div>
-                                @endif
+                        <div class="d-flex align-items-center">
+                            <form action="{{ route('comments.like', $comment) }}" method="POST" class="me-2">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-primary btn-sm">
+                                    ❤️ {{ $comment->likes->count() }}
+                                </button>
+                            </form>
 
-                                <!-- Post info -->
-                                <div class="row mb-4">
-                                    <div class="col-md-8">
-                                        <h3 class="text-primary">{{ $post->title }}</h3>
-                                        <div class="d-flex align-items-center text-sm text-muted mb-2">
-                                            <i class="material-icons text-sm me-1">person</i>
-                                            <span class="me-3">By <strong>{{ $post->user->name }}</strong></span>
-                                            <i class="material-icons text-sm me-1">calendar_today</i>
-                                            <span> {{ $post->created_at->format('d/m/Y à H:i') }}</span>
-                                        </div>
-                                        @if($post->updated_at != $post->created_at)
-                                            <div class="text-sm text-muted">
-                                                <i class="material-icons text-sm me-1">update</i>
-                                                Updated {{ $post->updated_at->format('d/m/Y à H:i') }}
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="col-md-4 text-end">
-                                        <span class="badge 
-                                            @if($post->status === 'active') bg-success 
-                                            @elseif($post->status === 'hidden') bg-warning 
-                                            @else bg-secondary @endif fs-6">
-                                            {{ ucfirst($post->status) }}
-                                        </span>
-                                    </div>
+                            <button class="btn btn-outline-danger btn-sm me-2" data-bs-toggle="modal" data-bs-target="#reportCommentModal-{{ $comment->id }}">
+                                <i class="material-icons text-sm">flag</i> Report
+                            </button>
+
+                            @if(auth()->id() === $comment->user_id || auth()->user()->isAdmin())
+                            <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="me-2">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                            </form>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Report Comment Modal -->
+                    <div class="modal fade" id="reportCommentModal-{{ $comment->id }}" tabindex="-1" aria-labelledby="reportCommentModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h6 class="modal-title" id="reportCommentModalLabel">Report Comment</h6>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
-
-                                <!-- Post media -->
-                                @if($post->media_url)
-                                    <div class="row mb-4">
-                                        <div class="col-12 text-center">
-                                            @if(Str::contains($post->media_url, ['.jpg', '.jpeg', '.png', '.gif', '.webp']))
-                                                <img src="{{ $post->media_url }}" alt="Post media"
-                                                    class="img-fluid rounded shadow" style="max-height: 500px;">
-                                            @elseif(Str::contains($post->media_url, ['youtube.com', 'youtu.be']))
-                                                <div class="ratio ratio-16x9">
-                                                    <iframe
-                                                        src="https://www.youtube.com/embed/{{ getYouTubeId($post->media_url) }}"
-                                                        frameborder="0" allowfullscreen></iframe>
-                                                </div>
-                                            @else
-                                                <div class="alert alert-info">
-                                                    <a href="{{ $post->media_url }}" target="_blank"
-                                                        class="text-decoration-none">
-                                                        <i class="material-icons me-2">link</i>
-                                                        View External Media
-                                                    </a>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endif
-
-                                <!-- Post content -->
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="card card-body border">
-                                            <h6 class="mb-3 text-primary">Content</h6>
-                                            <div class="text-justify" style="white-space: pre-line; line-height: 1.6;">
-                                                {{ $post->content }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Post tags -->
-                                @if($post->tags)
-                                    <div class="row mt-4">
-                                        <div class="col-12">
-                                            <h6 class="text-primary">Tags :</h6>
-                                            @foreach(explode(',', $post->tags) as $tag)
-                                                @if(trim($tag))
-                                                    <span
-                                                        class="badge bg-gradient-secondary me-1 mb-1 fs-6">{{ trim($tag) }}</span>
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
-
-                                <!-- Admin Controls -->
-                                <div class="row mt-4">
-                                    <div class="col-12 d-flex justify-content-between">
-                                        <div>
-                                            @if(auth()->user()->isAdmin())
-                                                @if($post->status === 'active')
-                                                    <form action="{{ route('posts.hide', $post) }}" method="POST"
-                                                        class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-warning btn-sm">
-                                                            <i class="material-icons">visibility_off</i> Hide
-                                                        </button>
-                                                    </form>
-                                                @else
-                                                    <form action="{{ route('posts.unhide', $post) }}" method="POST"
-                                                        class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-success btn-sm">
-                                                            <i class="material-icons">visibility</i> Show
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            @endif
-                                        </div>
-                                        <div>
-                                            @if(auth()->id() === $post->user_id || auth()->user()->isAdmin())
-                                                <form action="{{ route('posts.destroy', $post) }}" method="POST"
-                                                    class="d-inline">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit"
-                                                        onclick="return confirm('Are you sure you want to permanently delete this post?')"
-                                                        class="btn btn-danger btn-sm">
-                                                        <i class="material-icons">delete</i> Delete
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- ====================== COMMENTS SECTION ====================== -->
-                                <hr class="my-5">
-                                <h5 class="text-primary mb-3">Comments ({{ $post->comments->count() }})</h5>
-
-                                <!-- Add comment form -->
-                                <form action="{{ route('comments.store', $post) }}" method="POST" class="mb-4">
+                                <form action="{{ route('reports.store') }}" method="POST">
                                     @csrf
-                                    <div class="mb-3">
-                                        <textarea name="content" class="form-control" rows="3"
-                                            placeholder="Write a comment..." required></textarea>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="comment_id" value="{{ $comment->id }}">
+                                        <div class="mb-3">
+                                            <label class="form-label">Reason</label>
+                                            <textarea name="reason" class="form-control" rows="3" required></textarea>
+                                        </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        <i class="material-icons">send</i> Comment
-                                    </button>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-danger">Submit Report</button>
+                                    </div>
                                 </form>
-
-                                @php
-                                    $comments = $post->comments()
-                                        ->with('user', 'likes')
-                                        ->withCount('likes')
-                                        ->orderByDesc('likes_count')
-                                        ->get();
-                                @endphp
-
-                                @forelse ($comments as $comment)
-                                    <div class="border rounded p-3 mb-3 bg-light">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <strong>{{ $comment->user->name }}</strong>
-                                                <small class="text-muted ms-2">{{ $comment->created_at->diffForHumans() }}</small>
-                                            </div>
-                                            @if(auth()->id() === $comment->user_id || auth()->user()->isAdmin())
-                                                <form action="{{ route('comments.destroy', $comment) }}" method="POST"
-                                                    class="d-inline">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit"
-                                                        onclick="return confirm('Delete this comment?')"
-                                                        class="btn btn-danger btn-sm">Delete</button>
-                                                </form>
-                                            @endif
-                                        </div>
-
-                                        <p class="mt-2 mb-3">{{ $comment->content }}</p>
-
-                                        <div class="d-flex align-items-center">
-                                            <form action="{{ route('comments.like', $comment) }}" method="POST"
-                                                class="me-2">
-                                                @csrf
-                                                <button type="submit" class="btn btn-outline-primary btn-sm">
-                                                    ❤️ {{ $comment->likes->count() }}
-                                                </button>
-                                            </form>
-
-                                            @if(auth()->id() === $comment->user_id)
-                                                <!-- Edit inline form (optional later via JS) -->
-                                            @endif
-                                        </div>
-                                    </div>
-                                @empty
-                                    <p class="text-muted">No comments yet. Be the first to comment!</p>
-                                @endforelse
-
                             </div>
                         </div>
                     </div>
+                    @endforeach
                 </div>
             </div>
         </div>
     </main>
 
-    <x-plugins></x-plugins>
-
-    @push('scripts')
-        <script>
-            function getYouTubeId(url) {
-                const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-                const match = url.match(regExp);
-                return (match && match[7].length === 11) ? match[7] : false;
-            }
-        </script>
-    @endpush
+    <!-- Report Post Modal -->
+    <div class="modal fade" id="reportPostModal" tabindex="-1" aria-labelledby="reportPostModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h6 class="modal-title" id="reportPostModalLabel">Report Post</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{{ route('reports.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" name="post_id" value="{{ $post->id }}">
+                        <div class="mb-3">
+                            <label class="form-label">Reason</label>
+                            <textarea name="reason" class="form-control" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Submit Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </x-layout>

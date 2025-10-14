@@ -18,7 +18,6 @@
                         </div>
 
                         <div class="card-body px-0 pb-2">
-                            <!-- Success Message -->
                             @if(session('success'))
                                 <div class="alert alert-success alert-dismissible fade show mx-3" role="alert">
                                     {{ session('success') }}
@@ -26,12 +25,10 @@
                                 </div>
                             @endif
 
-                            <!-- Posts Grid -->
                             <div class="row g-4 p-3">
                                 @foreach($posts as $post)
                                 <div class="col-12 col-md-6 col-lg-4">
                                     <div class="card shadow-sm border-0 h-100 post-card">
-                                        <!-- Card Header with Author Info -->
                                         <div class="card-header bg-transparent border-0 pb-0 pt-3">
                                             <div class="d-flex align-items-center justify-content-between mb-2">
                                                 <div class="d-flex align-items-center">
@@ -43,7 +40,6 @@
                                                         <small class="text-muted">{{ $post->created_at->format('d/m/Y') }}</small>
                                                     </div>
                                                 </div>
-                                                <!-- Status Badge -->
                                                 <span class="badge 
                                                     @if($post->status === 'active') bg-success 
                                                     @elseif($post->status === 'hidden') bg-warning 
@@ -53,19 +49,13 @@
                                             </div>
                                         </div>
 
-                                        <!-- Card Body -->
                                         <div class="card-body py-3">
-                                            <!-- Post Title -->
                                             <h6 class="card-title text-dark font-weight-bold mb-2">
                                                 {{ Str::limit($post->title, 60) }}
                                             </h6>
-
-                                            <!-- Post Content Excerpt -->
                                             <p class="card-text text-muted small mb-3">
                                                 {{ Str::limit(strip_tags($post->content), 120) }}
                                             </p>
-
-                                            <!-- Tags -->
                                             @if($post->tags)
                                             <div class="mb-3">
                                                 @foreach(explode(',', $post->tags) as $tag)
@@ -80,23 +70,17 @@
                                             @endif
                                         </div>
 
-                                        <!-- Card Footer with Actions -->
                                         <div class="card-footer bg-transparent border-0 pt-0 pb-3">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="d-flex">
-                                                    <!-- View Button -->
-                                                    <a href="{{ route('posts.show', $post) }}" class="btn btn-sm btn-outline-primary me-1" 
-                                                       data-bs-toggle="tooltip" title="Voir">
+                                                    <a href="{{ route('posts.show', $post) }}" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" title="Voir">
                                                         <i class="material-icons text-sm">visibility</i>
                                                     </a>
 
-                                                    <!-- Edit & Delete (Owner or Admin) -->
                                                     @if(auth()->id() === $post->user_id || auth()->user()->isAdmin())
-                                                    <a href="{{ route('posts.edit', $post) }}" class="btn btn-sm btn-outline-warning me-1" 
-                                                       data-bs-toggle="tooltip" title="Modifier">
+                                                    <a href="{{ route('posts.edit', $post) }}" class="btn btn-sm btn-outline-warning me-1" data-bs-toggle="tooltip" title="Modifier">
                                                         <i class="material-icons text-sm">edit</i>
                                                     </a>
-                                                    
                                                     <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
                                                         @csrf @method('DELETE')
                                                         <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')" 
@@ -107,36 +91,44 @@
                                                     @endif
                                                 </div>
 
-                                                <!-- Admin Actions -->
-                                                @if(auth()->user()->isAdmin())
                                                 <div>
-                                                    @if($post->status === 'active')
-                                                    <form action="{{ route('posts.hide', $post) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-sm btn-outline-warning" 
-                                                                data-bs-toggle="tooltip" title="Masquer">
-                                                            <i class="material-icons text-sm">visibility_off</i>
-                                                        </button>
-                                                    </form>
-                                                    @else
-                                                    <form action="{{ route('posts.unhide', $post) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-sm btn-outline-success" 
-                                                                data-bs-toggle="tooltip" title="Afficher">
-                                                            <i class="material-icons text-sm">visibility</i>
-                                                        </button>
-                                                    </form>
-                                                    @endif
+                                                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#reportPostModal-{{ $post->id }}">
+                                                        <i class="material-icons text-sm">flag</i>
+                                                    </button>
                                                 </div>
-                                                @endif
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Report Post Modal -->
+                                <div class="modal fade" id="reportPostModal-{{ $post->id }}" tabindex="-1" aria-labelledby="reportPostModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h6 class="modal-title" id="reportPostModalLabel">Report Post: {{ $post->title }}</h6>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form action="{{ route('reports.store') }}" method="POST">
+                                                @csrf
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="post_id" value="{{ $post->id }}">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Reason</label>
+                                                        <textarea name="reason" class="form-control" rows="3" required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Submit Report</button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
                                 @endforeach
                             </div>
 
-                            <!-- Pagination -->
                             <div class="d-flex justify-content-center mt-4">
                                 {{ $posts->links() }}
                             </div>
@@ -150,82 +142,13 @@
 
     @push('scripts')
     <script>
-        // Initialize tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
+        tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el) });
     </script>
     @endpush
 
     <style>
-    .post-card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        border-radius: 12px;
-        border: 1px solid #e9ecef;
-    }
-    .post-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
-    }
-    .card-header .avatar {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .card-title {
-        font-size: 1.1rem;
-        line-height: 1.4;
-        min-height: 3rem;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .card-text {
-        min-height: 3rem;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .btn-outline-primary {
-        border-color: #e91e63;
-        color: #e91e63;
-    }
-    .btn-outline-primary:hover {
-        background-color: #e91e63;
-        border-color: #e91e63;
-        color: white;
-    }
-    .btn-outline-warning {
-        border-color: #fb8c00;
-        color: #fb8c00;
-    }
-    .btn-outline-warning:hover {
-        background-color: #fb8c00;
-        border-color: #fb8c00;
-        color: white;
-    }
-    .btn-outline-danger {
-        border-color: #f44336;
-        color: #f44336;
-    }
-    .btn-outline-danger:hover {
-        background-color: #f44336;
-        border-color: #f44336;
-        color: white;
-    }
-    .btn-outline-success {
-        border-color: #4caf50;
-        color: #4caf50;
-    }
-    .btn-outline-success:hover {
-        background-color: #4caf50;
-        border-color: #4caf50;
-        color: white;
-    }
+        .post-card { transition: transform 0.2s, box-shadow 0.2s; border-radius: 12px; border: 1px solid #e9ecef; }
+        .post-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
     </style>
 </x-layout>

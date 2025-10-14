@@ -176,4 +176,7 @@ Route::resource('badges', BadgeController::class);
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
     Route::post('/comments/{comment}/like', [LikeController::class, 'toggleCommentLike'])->name('comments.like');
+
+    Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+
 });
