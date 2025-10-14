@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Http;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -14,20 +15,37 @@ class PostController extends Controller
      * - Regular users see only active posts
      */
     public function index()
-    {
-        if (Auth::check() && Auth::user()->isAdmin()) {
-            // Admin sees all posts with their status
-            $posts = Post::with('user')->latest()->paginate(10);
-        } else {
-            // Regular users see only active posts
-            $posts = Post::where('status', 'active')
-                ->with('user')
-                ->latest()
-                ->paginate(10);
-        }
-
-        return view('posts.index', compact('posts'));
+{
+    // App posts
+    if (Auth::check() && Auth::user()->isAdmin()) {
+        $posts = Post::with('user')->latest()->paginate(10);
+    } else {
+        $posts = Post::where('status', 'active')
+            ->with('user')
+            ->latest()
+            ->paginate(10);
     }
+
+    // Reddit posts (public subreddit)
+    $redditPosts = [];
+    $subreddit = env('REDDIT_SUBREDDIT', 'healthcare');
+    $limit = env('REDDIT_POST_LIMIT', 6);
+
+    try {
+        $response = Http::withHeaders([
+            'User-Agent' => env('REDDIT_USER_AGENT'),
+        ])->get("https://www.reddit.com/r/{$subreddit}/hot.json?limit={$limit}");
+
+        if ($response->ok()) {
+            $redditPosts = $response->json()['data']['children'];
+        }
+    } catch (\Exception $e) {
+        // Handle errors silently
+        $redditPosts = [];
+    }
+
+    return view('posts.index', compact('posts', 'redditPosts'));
+}
 
     /**
      * Show the form for creating a new post
