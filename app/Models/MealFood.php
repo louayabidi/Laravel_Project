@@ -11,6 +11,7 @@ class MealFood extends Model
     protected $fillable = [
         'meal_id',
         'food_id',
+        'name',
         'quantity',
         'calories_total',
         'protein_total',
@@ -18,6 +19,7 @@ class MealFood extends Model
         'fat_total',
         'sugar_total',
         'fiber_total',
+        'recognized_by_ai',
     ];
 
     public function meal()

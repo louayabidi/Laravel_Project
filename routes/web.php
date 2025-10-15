@@ -30,11 +30,18 @@ Route::get('/', function () {
 use App\Http\Controllers\SanteMesureController;
 use App\Http\Controllers\ObjectifController;
 
+
+
+Route::get('/meals/add-by-image', [MealController::class, 'showAddByImageForm'])->name('meals.add-by-image-form');
+Route::post('/meals/add-by-image', [MealController::class, 'addByImage'])->name('meals.add-by-image');
 /*
 |--------------------------------------------------------------------------
 | Routes publiques / guest
 |--------------------------------------------------------------------------
 */
+
+
+
 
 // Redirection root vers login
 Route::get('/', fn() => redirect()->route('login'))->middleware('guest');
@@ -141,11 +148,13 @@ Route::resource('meal-foods', MealFoodController::class);
 Route::resource('goals', FoodGoalController::class);
 Route::delete('goals/{goal}', [FoodGoalController::class, 'destroy'])->name('goals.destroy');
 Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
-Route::get('/food-suggestions', [App\Http\Controllers\MealFoodController::class, 'suggestions'])->name('food.suggestions');
-
+Route::get('/food-suggestions', [MealFoodController::class, 'suggestions'])->name('food.suggestions');
 Route::post('goals/{goal}/set-active', [FoodGoalController::class, 'setActive'])->name('goals.set-active');
 Route::get('admin/activity-logs', [FoodGoalController::class, 'activityLogs'])
     ->name('activity_logs');
+    
+
+
 
 Route::resource('categories', BadgeCategoryController::class);
 Route::resource('badges', BadgeController::class);
