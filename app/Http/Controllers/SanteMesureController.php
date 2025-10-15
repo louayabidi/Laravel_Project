@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SanteMesure;
 use App\Models\Regime;
+use App\Services\HealthAnalysisService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -11,9 +12,12 @@ use Dompdf\Dompdf;
 
 class SanteMesureController extends Controller
 {
-    public function __construct()
+    protected $healthAnalysisService;
+
+    public function __construct(HealthAnalysisService $healthAnalysisService)
     {
         $this->middleware('auth');
+        $this->healthAnalysisService = $healthAnalysisService;
     }
 
     public function index(Request $request)
@@ -33,16 +37,25 @@ class SanteMesureController extends Controller
 
         // Get user's health measurements
 
-        // Préparer les données pour les courbes d'évolution
+        // Analyser les tendances de santé avec l'IA
+        $healthAnalysis = $this->healthAnalysisService->analyzeHealthTrends(Auth::user(), 30);
+
+        // Préparer les données pour les courbes d'évolution (sans pagination pour les graphiques)
+        $allMesures = Auth::user()->santeMesures()
+            ->when($request->filled('date_debut'), fn($q) => $q->where('date_mesure', '>=', $request->date_debut))
+            ->when($request->filled('date_fin'), fn($q) => $q->where('date_mesure', '<=', $request->date_fin))
+            ->orderBy('date_mesure', 'asc')
+            ->get();
+
         $evolutionData = [
-            'dates' => $mesures->pluck('date_mesure'),
-            'poids' => $mesures->pluck('poids_kg'),
-            'imc' => $mesures->pluck('imc'),
-            'freq_cardiaque' => $mesures->pluck('freq_cardiaque'),
-            'tension' => $mesures->map(fn($m) => [$m->tension_systolique, $m->tension_diastolique])
+            'dates' => $allMesures->pluck('date_mesure')->map(fn($date) => $date->format('Y-m-d'))->values()->toArray(),
+            'poids' => $allMesures->pluck('poids_kg')->values()->toArray(),
+            'imc' => $allMesures->pluck('imc')->values()->toArray(),
+            'freq_cardiaque' => $allMesures->pluck('freq_cardiaque')->values()->toArray(),
+            'tension' => $allMesures->map(fn($m) => [$m->tension_systolique, $m->tension_diastolique])->values()->toArray()
         ];
 
-        return view('sante-mesures.index', compact('mesures', 'evolutionData'));
+        return view('sante-mesures.index', compact('mesures', 'evolutionData', 'healthAnalysis'));
     }
 
     public function show(SanteMesure $sante_mesure)
@@ -53,7 +66,10 @@ class SanteMesureController extends Controller
         $alertes = $sante_mesure->needsAlert();
         $regime = $sante_mesure->regime;
 
-        return view('sante-mesures.show', compact('sante_mesure', 'recommendations', 'alertes', 'regime'));
+        // Analyser les tendances de santé avec l'IA pour cette mesure spécifique
+        $healthAnalysis = $this->healthAnalysisService->analyzeHealthTrends($sante_mesure->user, 30);
+
+        return view('sante-mesures.show', compact('sante_mesure', 'recommendations', 'alertes', 'regime', 'healthAnalysis'));
     }
 
     public function create()
