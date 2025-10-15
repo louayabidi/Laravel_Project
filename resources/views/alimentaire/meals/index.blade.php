@@ -13,6 +13,11 @@
                     <a href="{{ route('meals.create') }}" class="mt-4 inline-block bg-white text-blue-600 font-semibold py-3 px-6 rounded-full hover:bg-blue-100 transition-transform transform hover:scale-105">
                         <i class="fas fa-plus mr-2"></i> Créer un nouveau repas
                     </a>
+                    <a href="{{ route('meals.add-by-image-form') }}" 
+   class="mt-4 inline-block bg-white text-indigo-600 font-semibold py-3 px-6 rounded-full hover:bg-indigo-100 transition-transform transform hover:scale-105 ml-2">
+   <i class="fas fa-camera mr-2"></i> Ajouter un repas par image (AI)
+</a>
+
                 </div>
             </div>
 

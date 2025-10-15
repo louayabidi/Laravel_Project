@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: laravel
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: password
     volumes:
       - dbdata:/var/lib/mysql
     networks:
