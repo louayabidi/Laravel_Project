@@ -51,11 +51,19 @@
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="mb-3">
-                                                            <label for="date_mesure" class="form-label">Date de mesure</label>
+                                                            <label for="date_mesure" class="form-label">
+                                                                <i class="material-icons" style="font-size: 1rem; vertical-align: middle;">calendar_today</i>
+                                                                Date de mesure
+                                                            </label>
                                                             <input type="date" name="date_mesure" id="date_mesure"
                                                                    class="form-control border p-2" required
-                                                                   value="{{ old('date_mesure', date('Y-m-d')) }}"
-                                                                   max="{{ date('Y-m-d') }}">
+                                                                   value="{{ old('date_mesure', now()->format('Y-m-d')) }}"
+                                                                   max="{{ now()->format('Y-m-d') }}"
+                                                                   readonly>
+                                                            <small class="form-text text-muted">
+                                                                <i class="material-icons" style="font-size: 0.8rem;">info</i>
+                                                                Date définie automatiquement à aujourd'hui
+                                                            </small>
                                                         </div>
 
                                                         <div class="mb-3">
@@ -105,17 +113,29 @@
                                                                     <select name="type_regime" id="type_regime"
                                                                             class="form-control border p-2">
                                                                         <option value="">Sélectionner un type</option>
-                                                                        <option value="Fitnesse" class="regime-option regime-fitnesse"
-                                                                                {{ old('type_regime') == 'Fitnesse' ? 'selected' : '' }}>
-                                                                            <i class="material-icons">directions_run</i> Fitnesse
+                                                                        <option value="Diabète" class="regime-option regime-diabète"
+                                                                                {{ old('type_regime') == 'Diabète' ? 'selected' : '' }}>
+                                                                            <i class="material-icons">local_hospital</i> Diabète
                                                                         </option>
-                                                                        <option value="musculation" class="regime-option regime-musculation"
-                                                                                {{ old('type_regime') == 'musculation' ? 'selected' : '' }}>
-                                                                            <i class="material-icons">fitness_center</i> Musculation
+                                                                        <option value="Hypertension" class="regime-option regime-hypertension"
+                                                                                {{ old('type_regime') == 'Hypertension' ? 'selected' : '' }}>
+                                                                            <i class="material-icons">favorite</i> Hypertension
                                                                         </option>
-                                                                        <option value="prise_de_poids" class="regime-option regime-prise-poids"
-                                                                                {{ old('type_regime') == 'prise_de_poids' ? 'selected' : '' }}>
-                                                                            <i class="material-icons">trending_up</i> Prise de poids
+                                                                        <option value="Grossesse" class="regime-option regime-grossesse"
+                                                                                {{ old('type_regime') == 'Grossesse' ? 'selected' : '' }}>
+                                                                            <i class="material-icons">pregnant_woman</i> Grossesse
+                                                                        </option>
+                                                                        <option value="Cholestérol élevé (hypercholestérolémie)" class="regime-option regime-cholestérol élevé (hypercholestérolémie)"
+                                                                                {{ old('type_regime') == 'Cholestérol élevé (hypercholestérolémie)' ? 'selected' : '' }}>
+                                                                            <i class="material-icons">opacity</i> Cholestérol élevé (hypercholestérolémie)
+                                                                        </option>
+                                                                        <option value="Maladie cœliaque (intolérance au gluten)" class="regime-option regime-maladie cœliaque (intolérance au gluten)"
+                                                                                {{ old('type_regime') == 'Maladie cœliaque (intolérance au gluten)' ? 'selected' : '' }}>
+                                                                            <i class="material-icons">restaurant</i> Maladie cœliaque (intolérance au gluten)
+                                                                        </option>
+                                                                        <option value="Insuffisance rénale" class="regime-option regime-insuffisance rénale"
+                                                                                {{ old('type_regime') == 'Insuffisance rénale' ? 'selected' : '' }}>
+                                                                            <i class="material-icons">healing</i> Insuffisance rénale
                                                                         </option>
                                                                     </select>
                                                                 </div>
@@ -226,13 +246,13 @@
                                     // Initialize regime type select styling
                                     const typeRegimeSelect = document.getElementById('type_regime');
 
-                                    typeRegimeSelect.addEventListener('change', function() {
-                                        const selectedOption = this.options[this.selectedIndex];
-                                        this.className = 'form-control border p-2';
-                                        if (this.value) {
-                                            this.classList.add('regime-' + this.value.toLowerCase());
-                                        }
-                                    });
+                                typeRegimeSelect.addEventListener('change', function() {
+                                    const selectedOption = this.options[this.selectedIndex];
+                                    this.className = 'form-control border p-2';
+                                    if (this.value) {
+                                        this.classList.add('regime-' + this.value.toLowerCase().replace(/[^a-z0-9]/g, ''));
+                                    }
+                                });
 
                                     // Fonction pour calculer l'IMC
                                     function calculerIMC() {

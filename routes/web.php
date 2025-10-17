@@ -20,6 +20,8 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReportController;
 
+use App\Http\Controllers\SanteMesureController;
+use App\Http\Controllers\AiTestController;
 
 
 // Root redirect
@@ -134,6 +136,12 @@ Route::middleware('auth')->group(function () {
     | Gestion alimentaire
     |--------------------------------------------------------------------------
     */
+    // AI Test routes
+    Route::get('ai-test', [AiTestController::class, 'index'])->name('ai-test.index');
+    Route::post('ai-test/test', [AiTestController::class, 'test'])->name('ai-test.test');
+    Route::get('ai-test/sample', [AiTestController::class, 'sample'])->name('ai-test.sample');
+
+   // gestion alimentaire
 Route::resource('foods', FoodController::class);
 Route::resource('meals', MealController::class);
 Route::resource('analytics', AnalyticController::class);

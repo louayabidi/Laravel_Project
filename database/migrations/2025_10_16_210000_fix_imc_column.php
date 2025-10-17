@@ -27,6 +27,5 @@ return new class extends Migration
         Schema::table('sante_mesure', function (Blueprint $table) {
             $table->decimal('imc', 4, 2)->nullable()->change();
         });
-
     }
 };

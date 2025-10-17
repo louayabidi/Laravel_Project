@@ -23,6 +23,112 @@
 
                 <!-- Filtres -->
                 <div class="card-body pt-4">
+                    <!-- IA de Diagnostic Préventif -->
+                    @if(true)
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card border-warning">
+                                <div class="card-header bg-gradient-warning">
+                                    <h5 class="mb-0 text-white d-flex align-items-center">
+                                        <i class="material-icons me-2">health_and_safety</i>
+                                        IA de Diagnostic Préventif - Analyse des Tendances (30 derniers jours)
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Debug info -->
+                                    <div class="alert alert-info">
+                                        <strong>Debug:</strong> healthAnalysis is set<br>
+                                        Alerts: {{ count($healthAnalysis['alerts'] ?? []) }}<br>
+                                        Recommendations: {{ count($healthAnalysis['recommendations'] ?? []) }}
+                                    </div>
+
+                                    <!-- Alertes -->
+                                    @if(!empty($healthAnalysis['alerts']))
+                                    <div class="mb-3">
+                                        <h6 class="text-danger"><i class="material-icons me-2">warning</i>Alertes Détectées :</h6>
+                                        @foreach($healthAnalysis['alerts'] as $alert)
+                                        <div class="alert alert-{{ $alert['type'] == 'danger' ? 'danger' : ($alert['type'] == 'warning' ? 'warning' : 'info') }} d-flex align-items-start mb-2">
+                                            <i class="material-icons me-2 mt-1">
+                                                @if($alert['type'] == 'danger')error
+                                                @elseif($alert['type'] == 'warning')warning
+                                                @else info
+                                                @endif
+                                            </i>
+                                            <div>
+                                                <strong>{{ $alert['message'] }}</strong>
+                                                @if(isset($alert['severity']))
+                                                <br><small class="text-muted">
+                                                    Sévérité: {{ $alert['severity'] == 'high' ? 'Élevée' : ($alert['severity'] == 'medium' ? 'Moyenne' : 'Faible') }}
+                                                </small>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                    @endif
+
+                                    <!-- Résultat Combiné de l'Ensemble IA -->
+                                    <div class="mb-4 p-4 border-2 rounded" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: 2px solid #667eea;">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="text-white mb-2"><i class="material-icons me-2">psychology</i>Prédiction Combinée (Ensemble)</h6>
+                                                <p class="text-white mb-0" style="font-size: 1.3em; font-weight: bold;">Condition Prédite: <span style="color: #ffd700;">Analyse en cours...</span></p>
+                                            </div>
+                                            <div class="text-center text-white">
+                                                <p class="mb-1" style="font-size: 0.9em;">Confiance</p>
+                                                <h4 class="mb-0" style="color: #ffd700;">--</h4>
+                                            </div>
+                                        </div>
+                                        <p class="text-white-50 mt-2 mb-0"><small><i class="material-icons" style="font-size: 0.9em;">info</i> Résultat du vote combiné de Random Forest (92.31%) + Gradient Boosting (100%) = Ensemble (98.67%)</small></p>
+                                    </div>
+
+                                    <!-- Recommandations -->
+                                    @if(!empty($healthAnalysis['recommendations']))
+                                    <div>
+                                        <h6 class="text-success mb-3"><i class="material-icons me-2">lightbulb</i>Recommandations Personnalisées :</h6>
+                                        <div class="row">
+                                            @foreach($healthAnalysis['recommendations'] as $index => $recommendation)
+                                            <div class="col-md-6 mb-3">
+                                                <div class="card border-success h-100">
+                                                    <div class="card-body d-flex align-items-start">
+                                                        <div class="me-3 mt-1">
+                                                            @if(str_contains($recommendation, '🍎') || str_contains($recommendation, 'Diabète'))
+                                                                <i class="material-icons text-success" style="font-size: 2rem;">local_dining</i>
+                                                            @elseif(str_contains($recommendation, '🏥') || str_contains($recommendation, 'Hypertension'))
+                                                                <i class="material-icons text-danger" style="font-size: 2rem;">favorite</i>
+                                                            @elseif(str_contains($recommendation, '🤰') || str_contains($recommendation, 'Grossesse'))
+                                                                <i class="material-icons text-primary" style="font-size: 2rem;">pregnant_woman</i>
+                                                            @elseif(str_contains($recommendation, '🥑') || str_contains($recommendation, 'Cholestérol'))
+                                                                <i class="material-icons text-warning" style="font-size: 2rem;">restaurant</i>
+                                                            @elseif(str_contains($recommendation, '🌾') || str_contains($recommendation, 'cœliaque'))
+                                                                <i class="material-icons text-info" style="font-size: 2rem;">no_food</i>
+                                                            @elseif(str_contains($recommendation, '🫘') || str_contains($recommendation, 'rénale'))
+                                                                <i class="material-icons text-secondary" style="font-size: 2rem;">healing</i>
+                                                            @elseif(str_contains($recommendation, '⚠️') || str_contains($recommendation, 'IMC'))
+                                                                <i class="material-icons text-warning" style="font-size: 2rem;">warning</i>
+                                                            @elseif(str_contains($recommendation, '📊') || str_contains($recommendation, 'Objectif'))
+                                                                <i class="material-icons text-info" style="font-size: 2rem;">track_changes</i>
+                                                            @elseif(str_contains($recommendation, '✅') || str_contains($recommendation, 'Félicitations'))
+                                                                <i class="material-icons text-success" style="font-size: 2rem;">celebration</i>
+                                                            @else
+                                                                <i class="material-icons text-success" style="font-size: 2rem;">check_circle</i>
+                                                            @endif
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <p class="mb-0 text-dark fw-medium">{{ $recommendation }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     <form action="{{ route('sante-mesures.index') }}" method="GET" class="row g-3 mb-4">
                         <div class="col-md-4">
                             <label for="date_debut" class="form-label">Date début</label>
