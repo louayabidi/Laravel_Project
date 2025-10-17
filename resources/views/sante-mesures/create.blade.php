@@ -51,11 +51,19 @@
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="mb-3">
-                                                            <label for="date_mesure" class="form-label">Date de mesure</label>
+                                                            <label for="date_mesure" class="form-label">
+                                                                <i class="material-icons" style="font-size: 1rem; vertical-align: middle;">calendar_today</i>
+                                                                Date de mesure
+                                                            </label>
                                                             <input type="date" name="date_mesure" id="date_mesure"
                                                                    class="form-control border p-2" required
-                                                                   value="{{ old('date_mesure', date('Y-m-d')) }}"
-                                                                   max="{{ date('Y-m-d') }}">
+                                                                   value="{{ old('date_mesure', now()->format('Y-m-d')) }}"
+                                                                   max="{{ now()->format('Y-m-d') }}"
+                                                                   readonly>
+                                                            <small class="form-text text-muted">
+                                                                <i class="material-icons" style="font-size: 0.8rem;">info</i>
+                                                                Date définie automatiquement à aujourd'hui
+                                                            </small>
                                                         </div>
 
                                                         <div class="mb-3">

@@ -17,10 +17,9 @@ class AiRecommendationService
     {
         $this->config = config('ai');
         $this->client = new Client([
-            'base_uri' => $this->config['openai']['base_url'],
-            'timeout' => $this->config['openai']['timeout'],
+            'base_uri' => $this->config['google']['base_url'],
+            'timeout' => $this->config['google']['timeout'],
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->config['openai']['api_key'],
                 'Content-Type' => 'application/json',
             ],
         ]);
@@ -54,8 +53,8 @@ class AiRecommendationService
             // Générer le prompt
             $prompt = $this->buildHealthPrompt($anonymizedData, $regimeType);
 
-            // Appeler OpenAI
-            $response = $this->callOpenAI($prompt);
+            // Appeler Google AI
+            $response = $this->callGoogleAI($prompt);
 
             // Parser la réponse
             $recommendations = $this->parseRecommendations($response);
@@ -87,51 +86,52 @@ class AiRecommendationService
     }
 
     /**
-     * Appelle l'API OpenAI
+     * Appelle l'API Google AI (Gemini)
      */
-    protected function callOpenAI(string $prompt): string
+    protected function callGoogleAI(string $prompt): string
     {
         $payload = [
-            'model' => $this->config['openai']['model'],
-            'messages' => [
+            'contents' => [
                 [
-                    'role' => 'system',
-                    'content' => 'Vous êtes un expert en nutrition et santé. Fournissez des recommandations personnalisées, sécurisées et basées sur des données médicales. Répondez en français.'
-                ],
-                [
-                    'role' => 'user',
-                    'content' => $prompt
+                    'parts' => [
+                        [
+                            'text' => 'Vous êtes un expert en nutrition et santé. Fournissez des recommandations personnalisées, sécurisées et basées sur des données médicales. Répondez en français.' . "\n\n" . $prompt
+                        ]
+                    ]
                 ]
             ],
-            'max_tokens' => $this->config['openai']['max_tokens'],
-            'temperature' => $this->config['openai']['temperature'],
+            'generationConfig' => [
+                'temperature' => $this->config['google']['temperature'],
+                'maxOutputTokens' => $this->config['google']['max_tokens'],
+            ]
         ];
 
-        $response = $this->client->post('/chat/completions', [
-            'json' => $payload
+        $response = $this->client->post('/models/' . $this->config['google']['model'] . ':generateContent', [
+            'json' => $payload,
+            'query' => ['key' => $this->config['google']['api_key']]
         ]);
 
         $body = $response->getBody()->getContents();
         $data = json_decode($body, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            Log::error('Failed to parse OpenAI JSON response', [
+            Log::error('Failed to parse Google AI JSON response', [
                 'error' => json_last_error_msg(),
                 'body' => $body
             ]);
             return '';
         }
 
-        if (!isset($data['choices']) || !is_array($data['choices']) || empty($data['choices']) ||
-            !isset($data['choices'][0]) || !isset($data['choices'][0]['message']['content'])) {
-            Log::error('Invalid OpenAI response structure', [
+        if (!isset($data['candidates']) || !is_array($data['candidates']) || empty($data['candidates']) ||
+            !isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+            Log::error('Invalid Google AI response structure', [
                 'response' => $data,
                 'body' => $body
             ]);
             return '';
         }
 
-        return $data['choices'][0]['message']['content'];
+        return $data['candidates'][0]['content']['parts'][0]['text'];
     }
 
     /**
@@ -184,12 +184,12 @@ class AiRecommendationService
             if (str_starts_with($line, '-')) {
                 $content = trim(substr($line, 1));
                 if (!empty($content)) {
-                    $recommendations[] = [
-                        'type' => 'ai_generated',
-                        'message' => $content,
-                        'priority' => 'medium',
-                        'source' => 'openai'
-                    ];
+        $recommendations[] = [
+            'type' => 'ai_generated',
+            'message' => $content,
+            'priority' => 'medium',
+            'source' => 'google_ai'
+        ];
                 }
             }
         }
@@ -200,7 +200,7 @@ class AiRecommendationService
                 'type' => 'ai_generated',
                 'message' => 'Continuez à surveiller vos mesures de santé régulièrement. Consultez un professionnel de santé pour des conseils personnalisés.',
                 'priority' => 'low',
-                'source' => 'openai'
+                'source' => 'google_ai'
             ];
         }
 
@@ -292,7 +292,7 @@ class AiRecommendationService
     {
         try {
             $prompt = $this->buildTrendAnalysisPrompt($measurements);
-            $response = $this->callOpenAI($prompt);
+            $response = $this->callGoogleAI($prompt);
 
             return [
                 'analysis' => $response,

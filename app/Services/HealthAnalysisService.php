@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Log;
 
 class HealthAnalysisService
 {
-    protected AiRecommendationService $aiService;
+    protected AiRecommendationServiceLocal $aiService;
 
-    public function __construct(AiRecommendationService $aiService = null)
+    public function __construct(AiRecommendationServiceLocal $aiService = null)
     {
-        $this->aiService = $aiService ?? app(AiRecommendationService::class);
+        $this->aiService = $aiService ?? app(AiRecommendationServiceLocal::class);
     }
     /**
      * Analyze health trends and detect anomalies for a user
@@ -75,17 +75,21 @@ class HealthAnalysisService
         }
 
         // Check for recent increase
-        if (count($systolicValues) >= 7) {
+        if (count($systolicValues) > 7) {
             $recentAvg = array_sum(array_slice($systolicValues, -7)) / 7;
-            $olderAvg = array_sum(array_slice($systolicValues, 0, -7)) / (count($systolicValues) - 7);
+            $olderCount = count($systolicValues) - 7;
+            
+            if ($olderCount > 0) {
+                $olderAvg = array_sum(array_slice($systolicValues, 0, -7)) / $olderCount;
 
-            if ($olderAvg > 0 && (($recentAvg - $olderAvg) / $olderAvg) > 0.15) {
-                $alerts[] = [
-                    'type' => 'warning',
-                    'parameter' => 'tension',
-                    'message' => "Votre tension a augmenté de " . round((($recentAvg - $olderAvg) / $olderAvg) * 100) . "% ces derniers jours. Surveillez attentivement.",
-                    'severity' => 'medium'
-                ];
+                if ($olderAvg > 0 && (($recentAvg - $olderAvg) / $olderAvg) > 0.15) {
+                    $alerts[] = [
+                        'type' => 'warning',
+                        'parameter' => 'tension',
+                        'message' => "Votre tension a augmenté de " . round((($recentAvg - $olderAvg) / $olderAvg) * 100) . "% ces derniers jours. Surveillez attentivement.",
+                        'severity' => 'medium'
+                    ];
+                }
             }
         }
 

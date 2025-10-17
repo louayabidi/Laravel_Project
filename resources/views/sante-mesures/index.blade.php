@@ -68,8 +68,8 @@
                                         <h6 class="text-success"><i class="material-icons me-2">lightbulb</i>Recommandations Personnalisées :</h6>
                                         <div class="mb-2">
                                             <small class="text-muted">
-                                                <i class="fas fa-robot me-1"></i>
-                                                Généré par Intelligence Artificielle (OpenAI GPT-4)
+                                                <i class="fas fa-brain me-1"></i>
+                                                Généré par Intelligence Artificielle Locale (Ensemble: Random Forest + Gradient Boosting - 95%+ Accuracy)
                                             </small>
                                         </div>
                                         <ul class="list-group list-group-flush">

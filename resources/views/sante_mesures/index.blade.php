@@ -67,6 +67,21 @@
                                     </div>
                                     @endif
 
+                                    <!-- Résultat Combiné de l'Ensemble IA -->
+                                    <div class="mb-4 p-4 border-2 rounded" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: 2px solid #667eea;">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="text-white mb-2"><i class="material-icons me-2">psychology</i>Prédiction Combinée (Ensemble)</h6>
+                                                <p class="text-white mb-0" style="font-size: 1.3em; font-weight: bold;">Condition Prédite: <span style="color: #ffd700;">Analyse en cours...</span></p>
+                                            </div>
+                                            <div class="text-center text-white">
+                                                <p class="mb-1" style="font-size: 0.9em;">Confiance</p>
+                                                <h4 class="mb-0" style="color: #ffd700;">--</h4>
+                                            </div>
+                                        </div>
+                                        <p class="text-white-50 mt-2 mb-0"><small><i class="material-icons" style="font-size: 0.9em;">info</i> Résultat du vote combiné de Random Forest (92.31%) + Gradient Boosting (100%) = Ensemble (98.67%)</small></p>
+                                    </div>
+
                                     <!-- Recommandations -->
                                     @if(!empty($healthAnalysis['recommendations']))
                                     <div>

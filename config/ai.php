@@ -11,23 +11,23 @@ return [
     |
     */
 
-    'openai' => [
-        'api_key' => env('OPENAI_API_KEY'),
-        'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
-        'model' => env('OPENAI_MODEL', 'gpt-4'),
-        'max_tokens' => env('OPENAI_MAX_TOKENS', 2000),
-        'temperature' => env('OPENAI_TEMPERATURE', 0.7),
-        'timeout' => env('OPENAI_TIMEOUT', 30),
+    'google' => [
+        'api_key' => env('GOOGLE_AI_API_KEY'),
+        'base_url' => env('GOOGLE_AI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
+        'model' => env('GOOGLE_AI_MODEL', 'gemini-pro'),
+        'max_tokens' => env('GOOGLE_AI_MAX_TOKENS', 2000),
+        'temperature' => env('GOOGLE_AI_TEMPERATURE', 0.7),
+        'timeout' => env('GOOGLE_AI_TIMEOUT', 30),
     ],
 
     'cache' => [
-        'enabled' => env('AI_CACHE_ENABLED', true),
+        'enabled' => env('AI_CACHE_ENABLED', false),
         'ttl' => env('AI_CACHE_TTL', 3600), // 1 hour
         'prefix' => 'ai_recommendations',
     ],
 
     'rate_limiting' => [
-        'enabled' => env('AI_RATE_LIMITING_ENABLED', true),
+        'enabled' => env('AI_RATE_LIMITING_ENABLED', false),
         'max_requests_per_minute' => env('AI_RATE_LIMIT_MAX_REQUESTS', 10),
         'max_requests_per_hour' => env('AI_RATE_LIMIT_MAX_HOURLY', 50),
     ],

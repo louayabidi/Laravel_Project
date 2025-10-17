@@ -69,7 +69,11 @@ class SanteMesureController extends Controller
         // Analyser les tendances de santé avec l'IA pour cette mesure spécifique
         $healthAnalysis = $this->healthAnalysisService->analyzeHealthTrends($sante_mesure->user, 30);
 
-        return view('sante-mesures.show', compact('sante_mesure', 'recommendations', 'alertes', 'regime', 'healthAnalysis'));
+        // Vérifier si c'est une nouvelle mesure (créée à l'instant)
+        $showToast = session('show_modal', false);
+        $toastData = session('modal_data', null);
+
+        return view('sante-mesures.show', compact('sante_mesure', 'recommendations', 'alertes', 'regime', 'healthAnalysis', 'showToast', 'toastData'));
     }
 
     public function create()
@@ -116,7 +120,15 @@ class SanteMesureController extends Controller
         }
 
         return redirect()->route('sante-mesures.show', $mesure)
-            ->with('success', 'Mesure ajoutée avec succès !');
+            ->with('success', 'Mesure ajoutée avec succès !')
+            ->with('show_modal', true)
+            ->with('modal_data', [
+                'imc' => $mesure->imc,
+                'poids' => $mesure->poids_kg,
+                'tension' => $mesure->tension_systolique . '/' . $mesure->tension_diastolique,
+                'freq_cardiaque' => $mesure->freq_cardiaque,
+                'regime_type' => $mesure->regime->type_regime ?? 'Non spécifié'
+            ]);
     }
 
     public function edit(SanteMesure $sante_mesure)

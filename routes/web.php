@@ -11,6 +11,7 @@ use App\Http\Controllers\AnalyticController;
 use App\Http\Controllers\MealFoodController;
 use App\Http\Controllers\HabitudeController;
 use App\Http\Controllers\SanteMesureController;
+use App\Http\Controllers\AiTestController;
 
 
 // Root redirect
@@ -93,6 +94,11 @@ Route::get('sante-mesures', [SanteMesureController::class, 'index'])
     ->name('sante-mesures.index');
     
     Route::get('sante-mesures/export/pdf', [SanteMesureController::class, 'exportPDF'])->name('sante-mesures.export.pdf');
+
+    // AI Test routes
+    Route::get('ai-test', [AiTestController::class, 'index'])->name('ai-test.index');
+    Route::post('ai-test/test', [AiTestController::class, 'test'])->name('ai-test.test');
+    Route::get('ai-test/sample', [AiTestController::class, 'sample'])->name('ai-test.sample');
 
    // gestion alimentaire 
 Route::resource('foods', FoodController::class);
