@@ -20,7 +20,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReportController;
 
-use App\Http\Controllers\SanteMesureController;
+
 use App\Http\Controllers\AiTestController;
 
 
@@ -73,6 +73,7 @@ Route::middleware('auth')->group(function () {
 
     // Profile & logout
     Route::get('profile', [ProfileController::class, 'create'])->name('profile');
+    Route::get('user-profile/{user}', [ProfileController::class, 'show'])->name('user-profile.show');
 
 
     Route::post('user-profile', [ProfileController::class, 'update']);

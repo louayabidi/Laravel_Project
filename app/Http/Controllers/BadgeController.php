@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\User;
 
 use App\Models\Badge;
 use Illuminate\Http\Request;
@@ -11,16 +12,41 @@ class BadgeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        // Fetch all badges with their categories
-        //pass the connected user
-         $user = Auth::user();
-        $badges = Badge::with('category')->get();
-        return view('gamification.badge.index', compact('badges', 'user'))
-            ->with('activePage', 'badges');
+public function index()
+{
+    $user = Auth::user();
 
-    }
+    // Fetch all badges with categories
+    $badges = Badge::with('category')->get();
+
+    // Fetch all users with badges
+    $allUsers = User::with(['badges' => function($query) {
+    $query->wherePivot('acquired', true);
+}])->get();
+
+    // Filter users with at least one badge
+    $usersWithBadges = $allUsers->filter(fn($u) => $u->badges->count() > 0);
+
+    // Prepare leaderboard
+    $leaderboard = $usersWithBadges->map(function($u) {
+        $u->badge_count = $u->badges->count();
+
+        // Shuffle badges and take max 3
+        $u->random_badges = $u->badges->shuffle()->take(3);
+
+        // Compute how many extra badges
+        $u->extra_badges = max(0, $u->badge_count - 3);
+
+        return $u;
+    })->sortByDesc('badge_count');
+    $leaderboard = $leaderboard->take(10);
+    $leaderboard = $leaderboard->values();
+
+    return view('gamification.badge.index', compact('badges', 'user', 'allUsers', 'leaderboard'))
+        ->with('activePage', 'badges');
+}
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -38,8 +64,12 @@ class BadgeController extends Controller
 }
 
 
-    public function store(Request $request)
+        public function store(Request $request)
     {
+        // Log incoming request for debugging
+        \Log::info('Badge store request:', $request->all());
+        \Log::info('Has Image?', ['hasFile' => $request->hasFile('image')]);
+
         // Validate inputs
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -50,17 +80,20 @@ class BadgeController extends Controller
         ]);
 
         $data = $request->only(['name', 'description', 'badge_categorie_id', 'criteria']);
+
+        // Handle image upload
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('badges', 'public');
             $data['image'] = $path;
         }
 
-        // Create badge
+        // Make sure model has fillable
         Badge::create($data);
 
-        // Redirect back with success message
-        return redirect()->route('categories.show', $request->badge_categorie_id)->with('success', 'Badge created successfully!');
+        return redirect()->route('categories.show', $request->badge_categorie_id)
+                        ->with('success', 'Badge created successfully!');
     }
+
 
     /**
      * Display the specified resource.

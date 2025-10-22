@@ -9,50 +9,44 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('badge_categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('icon')->nullable();
-            $table->timestamps();
-        });
+                public function up(): void
+            {
+                if (!Schema::hasTable('badge_categories')) {
+                    Schema::create('badge_categories', function (Blueprint $table) {
+                        $table->id();
+                        $table->string('name');
+                        $table->text('description')->nullable();
+                        $table->string('icon')->nullable();
+                        $table->timestamps();
+                    });
+                }
 
-        // 2) Badges Table
-        Schema::create('badges', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('title')->nullable();
-            $table->text('description')->nullable();
-            $table->string('image')->nullable();
-            $table->string('criteria')->nullable();
-            $table->foreignId('badge_categorie_id')
-                  ->constrained('badge_categories')
-                  ->onDelete('cascade');
-            $table->timestamps();
-        });
-        Schema::create('badge_user', function (Blueprint $table) {
-            $table->id();
+                if (!Schema::hasTable('badges')) {
+                    Schema::create('badges', function (Blueprint $table) {
+                        $table->id();
+                        $table->string('name');
+                        $table->string('title')->nullable();
+                        $table->text('description')->nullable();
+                        $table->string('image')->nullable();
+                        $table->string('criteria')->nullable();
+                        $table->foreignId('badge_categorie_id')
+                            ->constrained('badge_categories')
+                            ->onDelete('cascade');
+                        $table->timestamps();
+                    });
+                }
 
-            // Foreign keys
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('badge_id')->constrained()->onDelete('cascade');
+                if (!Schema::hasTable('badge_user')) {
+                    Schema::create('badge_user', function (Blueprint $table) {
+                        $table->id();
+                        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                        $table->foreignId('badge_id')->constrained()->onDelete('cascade');
+                        $table->integer('total_points')->default(0); // new column
+                        $table->boolean('acquired')->default(false); // new column
+                        $table->timestamps();
+                        $table->unique(['user_id', 'badge_id']);
+                    });
+                }
+            }
 
-            $table->timestamps();
-
-            // Prevent duplicate badge assignment for the same user
-            $table->unique(['user_id', 'badge_id']);
-        });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-       Schema::dropIfExists('badge_user');
-       Schema::dropIfExists('badges');
-       Schema::dropIfExists('badge_categories');
-    }
 };

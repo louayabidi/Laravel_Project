@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Contracts\Auth\CanResetPassword;
+use App\Models\Badge;
 
 class User extends Authenticatable
 {
@@ -77,6 +78,23 @@ class User extends Authenticatable
 }
 public function badges()
 {
-    return $this->belongsToMany(Badge::class, 'badge_user')->withTimestamps();
+     return $this->belongsToMany(Badge::class, 'badge_user')
+                ->withPivot('total_points', 'acquired')
+                ->withTimestamps();
 }
+        protected static function booted()
+    {
+        static::created(function ($user) {
+            $allBadges = \App\Models\Badge::all();
+
+            foreach ($allBadges as $badge) {
+                $user->badges()->syncWithoutDetaching([
+                    $badge->id => [
+                        'total_points' => 0,
+                        'acquired' => false,
+                    ]
+                ]);
+            }
+        });
+    }
 }
