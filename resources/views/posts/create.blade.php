@@ -54,16 +54,7 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <div class="input-group input-group-static">
-                                                <label class="ms-0" for="media_url">URL Média (optionnel)</label>
-                                                <input type="url" class="form-control @error('media_url') is-invalid @enderror" name="media_url" id="media_url" value="{{ old('media_url') }}">
-                                                @error('media_url')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                            <small class="text-muted">URL d'une image, vidéo YouTube, etc.</small>
-                                        </div>
+                                        
                                         <div class="col-md-6 mb-3">
                                             <div class="input-group input-group-static">
                                                 <label class="ms-0" for="tags">Tags (séparés par des virgules)</label>
