@@ -6,21 +6,40 @@ use App\Models\Badge;
 use Illuminate\Http\Request;
 use App\Models\BadgeCategorie;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\BadgeProgress;
+
 class BadgeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
-    {
-        // Fetch all badges with their categories
-        //pass the connected user
-         $user = Auth::user();
-        $badges = Badge::with('category')->get();
-        return view('gamification.badge.index', compact('badges', 'user'))
-            ->with('activePage', 'badges');
+{
+    $user = Auth::user();
 
-    }
+    // Fetch all badges with categories
+    $badges = Badge::with('category')->get();
+
+    // Fetch users who have at least one badge, with badge count and badges relation
+    $usersWithBadges = User::with(['badges'])
+        ->withCount('badges')
+        ->has('badges')
+        ->get();
+
+    // Prepare leaderboard: add random badges and extra_badges
+    $leaderboard = $usersWithBadges->map(function ($u) {
+        $u->random_badges = $u->badges->shuffle()->take(3);
+        $u->extra_badges = max(0, $u->badges_count - 3); // using withCount
+        return $u;
+    })->sortByDesc('badges_count') // sort by badge count
+      ->take(10) // top 10
+      ->values(); // reindex
+
+    return view('gamification.badge.index', compact('badges', 'user', 'leaderboard'))
+        ->with('activePage', 'badges');
+}
+
 
     /**
      * Show the form for creating a new resource.
@@ -44,7 +63,7 @@ class BadgeController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'badge_categorie_id' => 'required|exists:badge_categories,id',
             'criteria' => 'nullable|string',
         ]);

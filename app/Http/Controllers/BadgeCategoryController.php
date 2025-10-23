@@ -37,7 +37,7 @@ class BadgeCategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'icon' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
+            'icon' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048'
         ]);
           $data = $request->only(['name', 'description']);
           if ($request->hasFile('icon')) {

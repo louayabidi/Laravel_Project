@@ -29,7 +29,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->middleware('guest');
 
-use App\Http\Controllers\SanteMesureController;
 use App\Http\Controllers\ObjectifController;
 
 /*
@@ -157,7 +156,7 @@ Route::get('admin/activity-logs', [FoodGoalController::class, 'activityLogs'])
 
 Route::resource('categories', BadgeCategoryController::class);
 Route::resource('badges', BadgeController::class);
-
+Route::get('user-profile/{user}', [ProfileController::class, 'show'])->name('user-profile.show');
 
     // forum
     Route::resource('posts', PostController::class);
