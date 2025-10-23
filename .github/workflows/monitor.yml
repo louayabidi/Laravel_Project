@@ -2,7 +2,7 @@ name: Monitor with Prometheus and Grafana
 on:
   push:
     branches:
-      - main
+      - devops
 jobs:
   deploy-monitoring:
     runs-on: ubuntu-latest
