@@ -155,15 +155,9 @@ Route::get('/food-suggestions', [App\Http\Controllers\MealFoodController::class,
     Route::get('admin/activity-logs', [FoodGoalController::class, 'activityLogs'])
         ->name('activity_logs');
 
-<<<<<<< HEAD
-    Route::resource('categories', BadgeCategoryController::class);
-    Route::resource('badges', BadgeController::class);
-
-=======
 Route::resource('categories', BadgeCategoryController::class);
 Route::resource('badges', BadgeController::class);
 Route::get('user-profile/{user}', [ProfileController::class, 'show'])->name('user-profile.show');
->>>>>>> gamification
 
     // forum
     Route::resource('posts', PostController::class);
