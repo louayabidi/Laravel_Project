@@ -39,11 +39,64 @@
                         </div>
                     @endif
 
-                    <!-- Recommandations -->
+                    <!-- IA de Diagnostic Préventif -->
+                    @if(isset($healthAnalysis) && (!empty($healthAnalysis['alerts']) || !empty($healthAnalysis['recommendations'])))
+                        <div class="card mb-4 border-warning">
+                            <div class="card-header bg-gradient-warning">
+                                <h5 class="mb-0 text-white d-flex align-items-center">
+                                    <i class="material-icons me-2">health_and_safety</i>
+                                    IA de Diagnostic Préventif - Analyse des Tendances (30 derniers jours)
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Alertes -->
+                                @if(!empty($healthAnalysis['alerts']))
+                                <div class="mb-3">
+                                    <h6 class="text-danger"><i class="material-icons me-2">warning</i>Alertes Détectées :</h6>
+                                    @foreach($healthAnalysis['alerts'] as $alert)
+                                    <div class="alert alert-{{ $alert['type'] == 'danger' ? 'danger' : ($alert['type'] == 'warning' ? 'warning' : 'info') }} d-flex align-items-start mb-2">
+                                        <i class="material-icons me-2 mt-1">
+                                            @if($alert['type'] == 'danger')error
+                                            @elseif($alert['type'] == 'warning')warning
+                                            @else info
+                                            @endif
+                                        </i>
+                                        <div>
+                                            <strong>{{ $alert['message'] }}</strong>
+                                            @if(isset($alert['severity']))
+                                            <br><small class="text-muted">
+                                                Sévérité: {{ $alert['severity'] == 'high' ? 'Élevée' : ($alert['severity'] == 'medium' ? 'Moyenne' : 'Faible') }}
+                                            </small>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @endif
+
+                                <!-- Recommandations IA -->
+                                @if(!empty($healthAnalysis['recommendations']))
+                                <div>
+                                    <h6 class="text-success"><i class="material-icons me-2">lightbulb</i>Recommandations Personnalisées :</h6>
+                                    <ul class="list-group list-group-flush">
+                                        @foreach($healthAnalysis['recommendations'] as $recommendation)
+                                        <li class="list-group-item d-flex align-items-start">
+                                            <i class="material-icons text-success me-2 mt-1" style="font-size: 1.2rem;">check_circle</i>
+                                            <span>{{ $recommendation }}</span>
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Recommandations de base -->
                     @if(count($recommendations) > 0)
                         <div class="card mb-4">
                             <div class="card-header">
-                                <h5 class="mb-0"><i class="material-icons me-2">tips_and_updates</i>Recommandations</h5>
+                                <h5 class="mb-0"><i class="material-icons me-2">tips_and_updates</i>Recommandations Spécifiques à cette Mesure</h5>
                             </div>
                             <div class="card-body">
                                 <div class="recommendations">
@@ -174,14 +227,20 @@
                                                 <i class="material-icons text-info me-2 align-middle">sports_gymnastics</i>Type de Régime
                                             </th>
                                             <td class="align-middle ps-3">
-                                                <span class="badge bg-gradient-{{ $regime->type_regime == 'Fitnesse' ? 'success' : ($regime->type_regime == 'musculation' ? 'info' : 'warning') }} px-3 py-2">
+                                                <span class="badge bg-gradient-{{ $regime->type_regime == 'Diabète' ? 'danger' : ($regime->type_regime == 'Hypertension' ? 'warning' : ($regime->type_regime == 'Grossesse' ? 'success' : ($regime->type_regime == 'Cholestérol élevé (hypercholestérolémie)' ? 'info' : ($regime->type_regime == 'Maladie cœliaque (intolérance au gluten)' ? 'primary' : 'secondary')))) }} px-3 py-2">
                                                     <i class="material-icons me-2 align-middle" style="font-size: 1.1rem;">
-                                                        @if($regime->type_regime == 'Fitnesse')
-                                                            directions_run
-                                                        @elseif($regime->type_regime == 'musculation')
-                                                            fitness_center
+                                                        @if($regime->type_regime == 'Diabète')
+                                                            local_hospital
+                                                        @elseif($regime->type_regime == 'Hypertension')
+                                                            favorite
+                                                        @elseif($regime->type_regime == 'Grossesse')
+                                                            pregnant_woman
+                                                        @elseif($regime->type_regime == 'Cholestérol élevé (hypercholestérolémie)')
+                                                            opacity
+                                                        @elseif($regime->type_regime == 'Maladie cœliaque (intolérance au gluten)')
+                                                            restaurant
                                                         @else
-                                                            trending_up
+                                                            healing
                                                         @endif
                                                     </i>
                                                     {{ $regime->type_regime }}

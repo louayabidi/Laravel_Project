@@ -26,12 +26,12 @@
             </a>
 
              <a href="{{ route('goals.index') }}" class="text-dark font-weight-bold text-sm text-decoration-none d-flex align-items-center gap-1">
-                <i class="fas fa-chart-line fa-sm"></i>
+                <i class="fas fa-seedling fa-sm"></i>
                 <span>Regime alimentaire</span>
             </a> 
 
             <a href="{{ route('tracking.index') }}" class="text-dark font-weight-bold text-sm text-decoration-none d-flex align-items-center gap-1">
-                <i class="fas fa-chart-line fa-sm"></i>
+                <i class="fas fa-clipboard-list fa-sm"></i>
                 <span>Suivre votre Regime</span>
             </a> 
             <a href="{{ route('objectifs.index') }}" class="text-dark font-weight-bold text-sm text-decoration-none d-flex align-items-center gap-1">

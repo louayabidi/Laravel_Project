@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->string('image')->nullable();
-            $table->string('criteria')->nullable();
+            $table->integer('criteria')->nullable();
             $table->foreignId('badge_categorie_id')
                   ->constrained('badge_categories')
                   ->onDelete('cascade');

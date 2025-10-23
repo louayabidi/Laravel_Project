@@ -1,57 +1,60 @@
 <?php
 
-
 namespace App\Http\Controllers;
-
 
 use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-
 class ReportController extends Controller
 {
-public function __construct()
+    public function store(Request $request)
 {
-$this->middleware('auth');
+    $request->validate([
+        'post_id' => 'required_without:comment_id|exists:posts,id',
+        'comment_id' => 'required_without:post_id|exists:comments,id',
+        'reason' => 'required|string|max:255',
+        'description' => 'nullable|string|max:500'
+    ]);
+
+    Report::create([
+        'reporter_id' => Auth::id(),
+        'post_id' => $request->post_id,
+        'comment_id' => $request->comment_id,
+        'reason' => $request->reason,
+        'description' => $request->description,
+        'status' => 'pending'
+    ]);
+
+    return back()->with('success', 'Signalement envoyé avec succès! Notre équipe va examiner votre rapport.');
 }
 
+    public function updateStatus(Request $request, Report $report)
+    {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403);
+        }
 
-public function store(Request $request)
-{
-$request->validate([
-'post_id' => 'nullable|exists:posts,id',
-'comment_id' => 'nullable|exists:comments,id',
-'reason' => 'required|string|max:2000'
-]);
+        $request->validate([
+            'status' => 'required|in:pending,in_review,resolved,dismissed'
+        ]);
 
+        $report->update([
+            'status' => $request->status,
+            'assigned_to' => Auth::id() // Auto-assign to current admin when updating status
+        ]);
 
-if (!$request->post_id && !$request->comment_id) {
-return back()->withErrors('Select a post or a comment to report.');
-}
+        return back()->with('success', 'Statut du signalement mis à jour!');
+    }
 
+    public function destroy(Report $report)
+    {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403);
+        }
 
-$exists = Report::where('reporter_id', Auth::id())
-->when($request->post_id, fn($q) => $q->where('post_id', $request->post_id))
-->when($request->comment_id, fn($q) => $q->where('comment_id', $request->comment_id))
-->whereIn('status', ['open','in_review'])
-->exists();
+        $report->delete();
 
-
-if ($exists) {
-return back()->with('info','You already reported this item.');
-}
-
-
-Report::create([
-'reporter_id' => Auth::id(),
-'post_id' => $request->post_id,
-'comment_id' => $request->comment_id,
-'reason' => $request->reason,
-'status' => 'open'
-]);
-
-
-return back()->with('success','Report submitted');
-}
+        return back()->with('success', 'Signalement supprimé!');
+    }
 }

@@ -1,6 +1,120 @@
 <x-layout bodyClass="g-sidenav-show bg-gray-200">
     @push('styles')
     <link href="{{ asset('assets/css/regime-styles.css') }}" rel="stylesheet">
+    <style>
+        /* Toast Notification Styles */
+        .toast-notification {
+            position: fixed !important;
+            top: 80px !important;
+            right: 20px !important;
+            left: auto !important;
+            bottom: auto !important;
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%) !important;
+            color: white !important;
+            padding: 1.5rem 2rem !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            z-index: 9999 !important;
+            max-width: 400px !important;
+            animation: slideInRight 0.4s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 1rem !important;
+        }
+
+        .toast-notification.hide {
+            animation: slideOutRight 0.4s ease forwards;
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .toast-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.3s ease;
+        }
+
+        .toast-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 0 0 8px 0;
+            animation: progress 5s linear forwards;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+        }
+
+        @keyframes progress {
+            from {
+                width: 100%;
+            }
+            to {
+                width: 0%;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .toast-notification {
+                left: 10px;
+                right: 10px;
+                max-width: none;
+            }
+        }
+    </style>
     @endpush
 
     <x-header.header></x-header.header>
@@ -39,7 +153,10 @@
                         </div>
                     @endif
 
-                    <!-- Recommandations -->
+                    <!-- Recommandations Personnalisées (Vue Améliorée) -->
+                    @include('sante-mesures.recommendations', ['mesure' => $sante_mesure, 'recommendations' => $recommendations])
+
+                    <!-- Recommandations Anciennes Format (Gardé pour compatibilité) -->
                     @if(count($recommendations) > 0)
                         <div class="card mb-4">
                             <div class="card-header">
@@ -174,14 +291,20 @@
                                                 <i class="material-icons text-info me-2 align-middle">sports_gymnastics</i>Type de Régime
                                             </th>
                                             <td class="align-middle ps-3">
-                                                <span class="badge bg-gradient-{{ $regime->type_regime == 'Fitnesse' ? 'success' : ($regime->type_regime == 'musculation' ? 'info' : 'warning') }} px-3 py-2">
+                                                <span class="badge bg-gradient-{{ $regime->type_regime == 'Diabète' ? 'danger' : ($regime->type_regime == 'Hypertension' ? 'warning' : ($regime->type_regime == 'Grossesse' ? 'success' : ($regime->type_regime == 'Cholestérol élevé (hypercholestérolémie)' ? 'info' : ($regime->type_regime == 'Maladie cœliaque (intolérance au gluten)' ? 'primary' : 'secondary')))) }} px-3 py-2">
                                                     <i class="material-icons me-2 align-middle" style="font-size: 1.1rem;">
-                                                        @if($regime->type_regime == 'Fitnesse')
-                                                            directions_run
-                                                        @elseif($regime->type_regime == 'musculation')
-                                                            fitness_center
+                                                        @if($regime->type_regime == 'Diabète')
+                                                            local_hospital
+                                                        @elseif($regime->type_regime == 'Hypertension')
+                                                            favorite
+                                                        @elseif($regime->type_regime == 'Grossesse')
+                                                            pregnant_woman
+                                                        @elseif($regime->type_regime == 'Cholestérol élevé (hypercholestérolémie)')
+                                                            opacity
+                                                        @elseif($regime->type_regime == 'Maladie cœliaque (intolérance au gluten)')
+                                                            restaurant
                                                         @else
-                                                            trending_up
+                                                            healing
                                                         @endif
                                                     </i>
                                                     {{ $regime->type_regime }}
@@ -239,5 +362,105 @@
             <x-footers.auth></x-footers.auth>
         </div>
     </main>
+
+    @push('scripts')
+    <script>
+        // Ajouter les animations au style
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(400px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes slideOutRight {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(400px);
+                }
+            }
+
+            @keyframes progress {
+                from {
+                    width: 100%;
+                }
+                to {
+                    width: 0%;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Créer la toast notification
+        function createToast() {
+            const toast = document.createElement('div');
+            toast.id = 'toastNotification';
+            toast.style.cssText = `
+                position: fixed !important;
+                top: 80px !important;
+                right: 20px !important;
+                left: auto !important;
+                bottom: auto !important;
+                background: linear-gradient(135deg, #4caf50 0%, #45a049 100%) !important;
+                color: white !important;
+                padding: 1.5rem 2rem !important;
+                border-radius: 8px !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+                z-index: 99999 !important;
+                max-width: 400px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 1rem !important;
+                animation: slideInRight 0.4s ease !important;
+                font-family: Arial, sans-serif !important;
+            `;
+
+            toast.innerHTML = `
+                <div style="font-size: 1.5rem; flex-shrink: 0;">✓</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem;">Mesure Enregistrée!</div>
+                    <div style="font-size: 0.9rem; opacity: 0.95;">Recommandations générées par l'IA</div>
+                </div>
+                <button onclick="closeToast()" style="background: rgba(255, 255, 255, 0.2); border: none; color: white; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.3s ease; font-size: 1.2rem; padding: 0; line-height: 1;">×</button>
+                <div style="position: absolute; bottom: 0; left: 0; height: 3px; background: rgba(255, 255, 255, 0.5); border-radius: 0 0 8px 0; animation: progress 5s linear forwards; width: 100%;"></div>
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                closeToast();
+            }, 5000);
+        }
+
+        function closeToast() {
+            const toast = document.getElementById('toastNotification');
+            if (toast) {
+                toast.style.animation = 'slideOutRight 0.4s ease forwards';
+                setTimeout(() => {
+                    toast.remove();
+                }, 400);
+            }
+        }
+
+        // Afficher la toast si c'est une nouvelle mesure
+        @if($showToast ?? false)
+            console.log('Creating toast - showToast is true');
+            createToast();
+        @else
+            console.log('showToast is false or not set');
+        @endif
+    </script>
+    @endpush
+
     <x-plugins></x-plugins>
 </x-layout>

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Contracts\Auth\CanResetPassword;
-
+use App\Models\badgeProgress;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -75,8 +75,33 @@ class User extends Authenticatable
     return $this->hasMany(Habitude::class);
 
 }
+public function objectifs()
+{
+    return $this->hasMany(Objectif::class, 'user_id', 'id');
+}
+
 public function badges()
 {
     return $this->belongsToMany(Badge::class, 'badge_user')->withTimestamps();
 }
+public function badgeProgress()
+{
+    return $this->hasMany(BadgeProgress::class);
+}
+protected static function booted()
+{
+    static::created(function ($user) {
+        // Attach all existing badges with initial progress = 0
+        $badges = Badge::all();
+        foreach ($badges as $badge) {
+            $user->badgeProgress()->create([
+                'badge_id' => $badge->id,
+                'current_points' => $badge->criteria ?? 0,
+                'is_completed' => false
+            ]);
+        }
+    });
+}
+
+
 }

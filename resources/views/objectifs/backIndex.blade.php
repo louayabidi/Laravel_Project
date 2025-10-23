@@ -21,6 +21,7 @@
                             "></i>
                         </div>
                         <div>
+                        <div class="d-flex flex-column">
                             <h6 class="mb-0 text-white">{{ $objectif->title }}</h6>
                             <small>
                                 <span class="badge bg-light text-dark me-2">{{ $objectif->status }}</span>
@@ -28,16 +29,19 @@
                             </small>
                         </div>
                     </div>
+
                     <div class="d-flex gap-2">
-                        <span class="badge bg-light text-dark">
-                            <i class="fas fa-chart-line me-1"></i>{{ $objectif->habitudes_count ?? $objectif->habitudes->count() }} habitudes
-                        </span>
+                        @if($objectif->user)
+                        <button class="btn btn-sm btn-light text-dark ia-resume-btn" data-user="{{ $objectif->user->id }}">
+                            <i class="fas fa-robot me-1"></i>Résumé IA
+                        </button>
+                        @endif
                         <form action="{{ route('objectifs.destroy', $objectif->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button class="btn btn-sm btn-light text-dark" 
                                     onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet objectif et toutes ses habitudes ?')">
-                                <i class="fas fa-trash me-1"></i>Supprimer
+                                <i class="fas fa-trash me-1"></i>
                             </button>
                         </form>
                     </div>
@@ -60,13 +64,6 @@
                                     <strong class="text-primary">Fin:</strong>
                                     <div class="text-dark">{{ \Carbon\Carbon::parse($objectif->end_date)->format('d/m/Y') }}</div>
                                 </div>
-                                <div>
-                                    <strong class="text-primary">Progression:</strong>
-                                    <div class="text-dark">
-                                        {{ \Carbon\Carbon::parse($objectif->start_date)->diffInDays(now()) }} / 
-                                        {{ \Carbon\Carbon::parse($objectif->start_date)->diffInDays($objectif->end_date) }} jours
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -83,7 +80,6 @@
                                 <div class="col-md-3">
                                     <strong class="text-primary">
                                         <i class="fas fa-user me-1"></i>{{ $habitude->objectif->user->name ?? 'Utilisateur supprimé' }}
-
                                     </strong>
                                     <div class="text-muted small">
                                         <i class="fas fa-calendar me-1"></i>{{ \Carbon\Carbon::parse($habitude->date_jour)->format('d/m/Y') }}
@@ -164,4 +160,132 @@
         <x-footers.auth></x-footers.auth>
     </main>
     <x-plugins></x-plugins>
+
+    <!-- Modal Résumé IA par objectif -->
+    <div class="modal fade" id="iaResumeModal" tabindex="-1" aria-labelledby="iaResumeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-gradient-primary text-white">
+                    <h5 class="modal-title" id="iaResumeModalLabel">
+                        <i class="fas fa-robot me-2"></i>Analyse du Coach IA
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="ia-resume-content">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary mb-3"></div>
+                        <p>Analyse en cours par l'IA...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.ia-resume-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const userId = this.dataset.user;
+                const modalContent = document.getElementById('ia-resume-content');
+
+                const modal = new bootstrap.Modal(document.getElementById('iaResumeModal'));
+                modal.show();
+
+                modalContent.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary mb-3"></div>
+                        <p>Analyse IA en cours...</p>
+                        <small class="text-muted">Patientez quelques secondes</small>
+                    </div>
+                `;
+
+                // Appel API avec gestion d'erreur robuste
+                fetch(`/ia/huggingface-resume/${userId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur HTTP: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Réponse reçue:', data);
+                    
+                    let html = `
+                        <div class="card border-0 bg-gradient-primary text-white mb-4">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <i class="fas fa-robot fa-2x"></i>
+                                    </div>
+                                    <div class="col">
+                                        <h5 class="mb-1">Rapport IA</h5>
+                                        <p class="mb-0 opacity-8">${data.user?.name || 'Utilisateur'} - ${data.user?.email || ''}</p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <small>${data.timestamp || new Date().toLocaleDateString('fr-FR')}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Formatage des sections
+                    const formatSection = (content, title, icon, color) => {
+                        if (!content || content.includes('non trouvée')) return '';
+                        
+                        return `
+                            <div class="card border-${color} mb-3">
+                                <div class="card-header bg-${color} text-white">
+                                    <i class="${icon} me-2"></i>${title}
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-0">${content}</p>
+                                </div>
+                            </div>
+                        `;
+                    };
+
+                    html += formatSection(data.resume_ia, 'Résumé', 'fas fa-chart-line', 'success');
+                    html += formatSection(data.analyse_profonde, 'Analyse', 'fas fa-search', 'info');
+
+                    // Indiquer si c'est un fallback
+                    if (data.source === 'fallback_simple' || data.source === 'no_data') {
+                        html += `
+                            <div class="alert alert-info mt-3">
+                                <small><i class="fas fa-info-circle me-1"></i>Rapport généré automatiquement à partir des données</small>
+                            </div>
+                        `;
+                    }
+
+                    modalContent.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Erreur fetch:', error);
+                    modalContent.innerHTML = `
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-exclamation-triangle me-2"></i>Service momentanément indisponible</h6>
+                            <p class="mb-0">L'analyse IA n'est pas disponible pour le moment. Réessayez dans quelques minutes.</p>
+                        </div>
+                        <div class="card mt-3">
+                            <div class="card-body text-center">
+                                <i class="fas fa-sync-alt fa-2x text-muted mb-3"></i>
+                                <p class="text-muted">Actualisez la page et réessayez</p>
+                                <button class="btn btn-sm btn-primary" onclick="location.reload()">
+                                    Actualiser
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        });
+    });
+    </script>
+    @endpush
 </x-layout>

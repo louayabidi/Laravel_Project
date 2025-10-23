@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SanteMesure;
 use App\Models\Regime;
+use App\Services\HealthAnalysisService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -11,9 +12,12 @@ use Dompdf\Dompdf;
 
 class SanteMesureController extends Controller
 {
-    public function __construct()
+    protected $healthAnalysisService;
+
+    public function __construct(HealthAnalysisService $healthAnalysisService)
     {
         $this->middleware('auth');
+        $this->healthAnalysisService = $healthAnalysisService;
     }
 
     public function index(Request $request)
@@ -33,16 +37,25 @@ class SanteMesureController extends Controller
 
         // Get user's health measurements
 
-        // Préparer les données pour les courbes d'évolution
+        // Analyser les tendances de santé avec l'IA
+        $healthAnalysis = $this->healthAnalysisService->analyzeHealthTrends(Auth::user(), 30);
+
+        // Préparer les données pour les courbes d'évolution (sans pagination pour les graphiques)
+        $allMesures = Auth::user()->santeMesures()
+            ->when($request->filled('date_debut'), fn($q) => $q->where('date_mesure', '>=', $request->date_debut))
+            ->when($request->filled('date_fin'), fn($q) => $q->where('date_mesure', '<=', $request->date_fin))
+            ->orderBy('date_mesure', 'asc')
+            ->get();
+
         $evolutionData = [
-            'dates' => $mesures->pluck('date_mesure'),
-            'poids' => $mesures->pluck('poids_kg'),
-            'imc' => $mesures->pluck('imc'),
-            'freq_cardiaque' => $mesures->pluck('freq_cardiaque'),
-            'tension' => $mesures->map(fn($m) => [$m->tension_systolique, $m->tension_diastolique])
+            'dates' => $allMesures->pluck('date_mesure')->map(fn($date) => $date->format('Y-m-d'))->values()->toArray(),
+            'poids' => $allMesures->pluck('poids_kg')->values()->toArray(),
+            'imc' => $allMesures->pluck('imc')->values()->toArray(),
+            'freq_cardiaque' => $allMesures->pluck('freq_cardiaque')->values()->toArray(),
+            'tension' => $allMesures->map(fn($m) => [$m->tension_systolique, $m->tension_diastolique])->values()->toArray()
         ];
 
-        return view('sante-mesures.index', compact('mesures', 'evolutionData'));
+        return view('sante-mesures.index', compact('mesures', 'evolutionData', 'healthAnalysis'));
     }
 
     public function show(SanteMesure $sante_mesure)
@@ -53,7 +66,14 @@ class SanteMesureController extends Controller
         $alertes = $sante_mesure->needsAlert();
         $regime = $sante_mesure->regime;
 
-        return view('sante-mesures.show', compact('sante_mesure', 'recommendations', 'alertes', 'regime'));
+        // Analyser les tendances de santé avec l'IA pour cette mesure spécifique
+        $healthAnalysis = $this->healthAnalysisService->analyzeHealthTrends($sante_mesure->user, 30);
+
+        // Vérifier si c'est une nouvelle mesure (créée à l'instant)
+        $showToast = session('show_modal', false);
+        $toastData = session('modal_data', null);
+
+        return view('sante-mesures.show', compact('sante_mesure', 'recommendations', 'alertes', 'regime', 'healthAnalysis', 'showToast', 'toastData'));
     }
 
     public function create()
@@ -72,7 +92,7 @@ class SanteMesureController extends Controller
             'tension_diastolique' => 'required|integer|between:40,150',
             'remarque' => 'nullable|string|max:1000',
             'regime_id' => 'nullable|exists:regimes,id',
-            'type_regime' => 'required_if:regime_id,null|in:Fitnesse,musculation,prise_de_poids',
+            'type_regime' => 'required_if:regime_id,null|in:Diabète,Hypertension,Grossesse,Cholestérol élevé (hypercholestérolémie),Maladie cœliaque (intolérance au gluten),Insuffisance rénale',
             'valeur_cible' => 'required_if:regime_id,null|numeric',
             'description' => 'nullable|string|max:1000'
         ]);
@@ -100,7 +120,15 @@ class SanteMesureController extends Controller
         }
 
         return redirect()->route('sante-mesures.show', $mesure)
-            ->with('success', 'Mesure ajoutée avec succès !');
+            ->with('success', 'Mesure ajoutée avec succès !')
+            ->with('show_modal', true)
+            ->with('modal_data', [
+                'imc' => $mesure->imc,
+                'poids' => $mesure->poids_kg,
+                'tension' => $mesure->tension_systolique . '/' . $mesure->tension_diastolique,
+                'freq_cardiaque' => $mesure->freq_cardiaque,
+                'regime_type' => $mesure->regime->type_regime ?? 'Non spécifié'
+            ]);
     }
 
     public function edit(SanteMesure $sante_mesure)
@@ -122,7 +150,7 @@ class SanteMesureController extends Controller
             'tension_diastolique' => 'required|integer|between:40,150',
             'remarque' => 'nullable|string|max:1000',
             'regime_id' => 'nullable|exists:regimes,id',
-            'type_regime' => 'required_if:regime_id,null|in:Fitnesse,musculation,prise_de_poids',
+            'type_regime' => 'required_if:regime_id,null|in:Diabète,Hypertension,Grossesse,Cholestérol élevé (hypercholestérolémie),Maladie cœliaque (intolérance au gluten),Insuffisance rénale',
             'valeur_cible' => 'required_if:regime_id,null|numeric',
             'description' => 'nullable|string|max:1000'
         ]);
@@ -153,7 +181,6 @@ class SanteMesureController extends Controller
 
     public function destroy(SanteMesure $sante_mesure)
     {
-    
      if ($sante_mesure->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
         abort(403, 'Accès non autorisé.');
     }

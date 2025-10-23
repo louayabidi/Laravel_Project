@@ -11,7 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+
+        Schema::table('sante_mesure', function (Blueprint $table) {
+            // Augmenter la taille de la colonne imc de decimal(4,2) à decimal(5,2)
+            $table->decimal('imc', 5, 2)->nullable()->change();
+        });
     }
 
     /**
@@ -19,6 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+
+        Schema::table('sante_mesure', function (Blueprint $table) {
+            $table->decimal('imc', 4, 2)->nullable()->change();
+        });
+
     }
 };

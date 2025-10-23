@@ -20,6 +20,10 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReportController;
 
+use App\Http\Controllers\IAObController;
+use App\Http\Controllers\SanteMesureController;
+use App\Http\Controllers\AiTestController;
+use App\Http\Controllers\HuggingFaceController;
 
 
 // Root redirect
@@ -37,7 +41,7 @@ use App\Http\Controllers\ObjectifController;
 */
 
 // Redirection root vers login
-Route::get('/', fn() => redirect()->route('login'))->middleware('guest');
+Route::get('/', fn () => redirect()->route('login'))->middleware('guest');
 
 // Authentication routes
 Route::get('sign-up', [RegisterController::class, 'create'])->middleware('guest')->name('register');
@@ -49,9 +53,9 @@ Route::post('sign-in', [SessionsController::class, 'store'])->middleware('guest'
 Route::post('verify', [SessionsController::class, 'show'])->middleware('guest');
 Route::post('reset-password', [SessionsController::class, 'update'])->middleware('guest')->name('password.update');
 
-Route::get('verify', fn() => view('sessions.password.verify'))->middleware('guest')->name('verify');
+Route::get('verify', fn () => view('sessions.password.verify'))->middleware('guest')->name('verify');
 
-Route::get('/reset-password/{token}', fn($token) => view('sessions.password.reset', ['token' => $token]))
+Route::get('/reset-password/{token}', fn ($token) => view('sessions.password.reset', ['token' => $token]))
     ->middleware('guest')->name('password.reset');
 
 /*
@@ -86,7 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::view('user-profile', 'pages.laravel-examples.user-profile')->name('user-profile');
     //Route::view('profile', 'pages.profile')->name('profile');
 
-   // gestion alimentaire
+    // gestion alimentaire
 
     /*
     |--------------------------------------------------------------------------
@@ -101,6 +105,9 @@ Route::middleware('auth')->group(function () {
 
     // Habitudes générales
     Route::get('/habitudes', [HabitudeController::class, 'index'])->name('habitudes.index');
+    Route::get('/ia/predict/{id}', [IAObController::class, 'predict'])->name('ia.predict');
+Route::get('/ia/huggingface-resume/{userId}', [HuggingFaceController::class, 'generateAIResume'])
+    ->name('ia.huggingface.resume');
 
     // Habitudes CRUD classiques
     Route::put('/habitudes/{habitude}', [HabitudeController::class, 'update'])->name('habitudes.update');
@@ -134,6 +141,12 @@ Route::middleware('auth')->group(function () {
     | Gestion alimentaire
     |--------------------------------------------------------------------------
     */
+    // AI Test routes
+    Route::get('ai-test', [AiTestController::class, 'index'])->name('ai-test.index');
+    Route::post('ai-test/test', [AiTestController::class, 'test'])->name('ai-test.test');
+    Route::get('ai-test/sample', [AiTestController::class, 'sample'])->name('ai-test.sample');
+
+   // gestion alimentaire
 Route::resource('foods', FoodController::class);
 Route::resource('meals', MealController::class);
 Route::resource('analytics', AnalyticController::class);
@@ -150,13 +163,20 @@ Route::get('admin/activity-logs', [FoodGoalController::class, 'activityLogs'])
 Route::resource('categories', BadgeCategoryController::class);
 Route::resource('badges', BadgeController::class);
 
+    Route::post('goals/{goal}/set-active', [FoodGoalController::class, 'setActive'])->name('goals.set-active');
+    Route::get('admin/activity-logs', [FoodGoalController::class, 'activityLogs'])
+        ->name('activity_logs');
+
+Route::resource('categories', BadgeCategoryController::class);
+Route::resource('badges', BadgeController::class);
+Route::get('user-profile/{user}', [ProfileController::class, 'show'])->name('user-profile.show');
 
     // forum
     Route::resource('posts', PostController::class);
 
     Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
     Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
-    Route::get('/admin/posts/{post}', [PostController::class, 'show'])->name('admin.show');
+    Route::get('/admin/posts/{post}', [PostController::class, 'adminShow'])->name('admin.show');
 
     Route::get('/admin/posts', [PostController::class, 'adminIndex'])->name('admin.index');
 
@@ -170,4 +190,15 @@ Route::resource('badges', BadgeController::class);
     Route::post('/posts/{post}/hide', [PostController::class, 'hide'])->name('posts.hide');
     Route::post('/posts/{post}/unhide', [PostController::class, 'unhide'])->name('posts.unhide');
     Route::get('/admin/hidden-posts', [PostController::class, 'hiddenPosts'])->name('posts.hidden');
+
+    Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    Route::post('/comments/{comment}/like', [LikeController::class, 'toggleCommentLike'])->name('comments.like');
+
+    Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+    Route::get('/admin/posts/{post}/reports', [PostController::class, 'getPostReports'])->name('admin.posts.reports');
+    Route::patch('/reports/{report}/status', [ReportController::class, 'updateStatus'])->name('reports.updateStatus');
+    Route::delete('/reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
 });

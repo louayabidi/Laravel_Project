@@ -2,7 +2,7 @@
 
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use App\Models\BadgeProgress;
 use Illuminate\Database\Eloquent\Model;
 
 class Badge extends Model
@@ -18,5 +18,24 @@ class Badge extends Model
 {
     return $this->belongsToMany(User::class, 'badge_user')->withTimestamps();
 }
+    public function progress()
+{
+    return $this->hasMany(BadgeProgress::class);
+}
+protected static function booted()
+{
+    static::created(function ($badge) {
+        // Attach this badge to all existing users with initial progress = 0
+        $users = User::all();
+        foreach ($users as $user) {
+            $user->badgeProgress()->create([
+                'badge_id' => $badge->id,
+                'current_points' => $badge->criteria ?? 0,
+                'is_completed' => false
+            ]);
+        }
+    });
 }
 
+
+}

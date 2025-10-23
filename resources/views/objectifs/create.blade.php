@@ -12,8 +12,21 @@
                                 <h6 class="text-white text-capitalize ps-3">Créer un Objectif</h6>
                             </div>
                         </div>
+
                         <div class="card-body">
-                            <form action="{{ route('objectifs.store') }}" method="POST">
+                            <!-- Affichage global des erreurs -->
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <strong> Erreurs de validation :</strong>
+                                    <ul class="mb-0 mt-2">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <form action="{{ route('objectifs.store') }}" method="POST" novalidate>
                                 @csrf
 
                                 <div class="row">
@@ -23,8 +36,19 @@
                                         <div class="mb-4">
                                             <label class="form-label fw-bold">Titre de l'objectif</label>
                                             <div class="input-group input-group-outline">
-                                                <input type="text" name="title" class="form-control" placeholder="Ex: Boire plus d'eau" required>
+                                                <input 
+                                                    type="text" 
+                                                    name="title" 
+                                                    class="form-control @error('title') is-invalid @enderror"
+                                                    placeholder="Ex: Boire plus d'eau"
+                                                    value="{{ old('title') }}" 
+                                                    
+                                                    
+                                                >
                                             </div>
+                                            @error('title')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                             <small class="form-text text-muted">Donnez un nom clair à votre objectif</small>
                                         </div>
 
@@ -32,14 +56,22 @@
                                         <div class="mb-4">
                                             <label class="form-label fw-bold">Catégorie</label>
                                             <div class="input-group input-group-outline">
-                                                <select name="status" class="form-control" required>
-                                                    <option value="" disabled selected>Choisissez une catégorie</option>
-                                                    <option value="Sommeil">Sommeil</option>
-                                                    <option value="Eau">Eau</option>
-                                                    <option value="Sport">Sport</option>
-                                                    <option value="Stress">Stress</option>
+                                                <select 
+                                                    name="status" 
+                                                    class="form-control @error('status') is-invalid @enderror" 
+                                                    
+                                                    
+                                                >
+                                                    <option value="" disabled {{ old('status') ? '' : 'selected' }}>Choisissez une catégorie</option>
+                                                    <option value="Sommeil" {{ old('status') == 'Sommeil' ? 'selected' : '' }}>Sommeil</option>
+                                                    <option value="Eau" {{ old('status') == 'Eau' ? 'selected' : '' }}>Eau</option>
+                                                    <option value="Sport" {{ old('status') == 'Sport' ? 'selected' : '' }}>Sport</option>
+                                                    <option value="Stress" {{ old('status') == 'Stress' ? 'selected' : '' }}>Stress</option>
                                                 </select>
                                             </div>
+                                            @error('status')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                             <small class="form-text text-muted">Sélectionnez le domaine de votre objectif</small>
                                         </div>
 
@@ -47,8 +79,18 @@
                                         <div class="mb-4">
                                             <label class="form-label fw-bold">Valeur cible</label>
                                             <div class="input-group input-group-outline">
-                                                <input type="number" name="target_value" class="form-control" placeholder="Ex: 8" required>
+                                                <input 
+                                                    type="number" 
+                                                    name="target_value" 
+                                                    class="form-control @error('target_value') is-invalid @enderror"
+                                                    placeholder="Ex: 8"
+                                                    value="{{ old('target_value') }}" 
+
+                                                    >
                                             </div>
+                                            @error('target_value')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                             <small class="form-text text-muted">Définissez la valeur à atteindre</small>
                                         </div>
                                     </div>
@@ -59,8 +101,16 @@
                                         <div class="mb-4">
                                             <label class="form-label fw-bold">Description</label>
                                             <div class="input-group input-group-outline">
-                                                <textarea name="description" class="form-control" rows="4" placeholder="Décrivez votre objectif en détail..."></textarea>
+                                                <textarea 
+                                                    name="description" 
+                                                    class="form-control @error('description') is-invalid @enderror" 
+                                                    rows="4" 
+                                                    placeholder="Décrivez votre objectif en détail..."
+                                                >{{ old('description') }}</textarea>
                                             </div>
+                                            @error('description')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                             <small class="form-text text-muted">Optionnel - Expliquez le contexte ou les détails</small>
                                         </div>
 
@@ -70,20 +120,40 @@
                                                 <div class="mb-4">
                                                     <label class="form-label fw-bold">Date de début</label>
                                                     <div class="input-group input-group-outline">
-                                                        <input type="date" name="start_date" class="form-control" required>
+                                                        <input 
+                                                            type="date" 
+                                                            name="start_date" 
+                                                            class="form-control @error('start_date') is-invalid @enderror"
+                                                            value="{{ old('start_date') }}" 
+                                                            
+                                                        >
                                                     </div>
+                                                    @error('start_date')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-4">
                                                     <label class="form-label fw-bold">Date de fin</label>
                                                     <div class="input-group input-group-outline">
-                                                        <input type="date" name="end_date" class="form-control" required>
+                                                        <input 
+                                                            type="date" 
+                                                            name="end_date" 
+                                                            class="form-control @error('end_date') is-invalid @enderror"
+                                                            value="{{ old('end_date') }}" 
+                                                            
+                                                        >
                                                     </div>
+                                                    @error('end_date')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
                                                 </div>
                                             </div>
                                         </div>
-                                        <small class="form-text text-muted d-block mb-3">Définissez la période pour atteindre votre objectif</small>
+                                        <small class="form-text text-muted d-block mb-3">
+                                            Définissez la période pour atteindre votre objectif
+                                        </small>
                                     </div>
                                 </div>
 
