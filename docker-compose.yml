@@ -1,14 +1,13 @@
 services:
+  # Laravel app
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    image: laravel-app
     container_name: laravel-app
-    restart: unless-stopped
-    working_dir: /var/www
     volumes:
       - ./:/var/www
+      - ./.env:/var/www/.env
     networks:
       - laravel
     depends_on:
@@ -17,10 +16,9 @@ services:
   db:
     image: mysql:8.0
     container_name: laravel-db
-    restart: unless-stopped
     environment:
       MYSQL_DATABASE: laravel
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: password
     volumes:
       - dbdata:/var/lib/mysql
     networks:
@@ -29,7 +27,6 @@ services:
   nginx:
     image: nginx:alpine
     container_name: laravel-nginx
-    restart: unless-stopped
     ports:
       - "8000:80"
     volumes:
@@ -39,6 +36,37 @@ services:
       - laravel
     depends_on:
       - app
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - laravel
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - laravel
+    depends_on:
+      - prometheus
+
+  # SonarQube
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    networks:
+      - laravel
 
 networks:
   laravel:

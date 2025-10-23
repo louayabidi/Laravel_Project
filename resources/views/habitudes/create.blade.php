@@ -45,7 +45,6 @@
                                 @if(isset($habitude))
                                     @method('PUT')
                                 @endif
-
                                 <input type="hidden" name="objectif_id" value="{{ $objectifId }}">
 
                                 <div class="row">

@@ -19,6 +19,7 @@ use App\Http\Controllers\BadgeController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReportController;
+
 use App\Http\Controllers\IAObController;
 use App\Http\Controllers\SanteMesureController;
 use App\Http\Controllers\AiTestController;
@@ -30,13 +31,52 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->middleware('guest');
 
+use App\Http\Controllers\SanteMesureController;
 use App\Http\Controllers\ObjectifController;
+use App\Http\Controllers\MetricsController;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
+Route::get('/meals/add-by-image', [MealController::class, 'showAddByImageForm'])->name('meals.add-by-image-form');
+Route::post('/meals/add-by-image', [MealController::class, 'addByImage'])->name('meals.add-by-image');
 /*
 |--------------------------------------------------------------------------
 | Routes publiques / guest
 |--------------------------------------------------------------------------
 */
+
+//pour prometheus 
+
+// routes/web.php
+Route::get('/metrics', function () {
+    $uptime = time() - LARAVEL_START;
+    $dbStatus = DB::connection()->getPdo() ? 1 : 0;
+    $cacheHits = Cache::get('cache_hits', 0);
+    $cacheMisses = Cache::get('cache_misses', 0);
+
+    $metrics = [
+        "# HELP app_uptime_seconds Application uptime in seconds",
+        "# TYPE app_uptime_seconds counter",
+        "app_uptime_seconds {$uptime}",
+        "",
+        "# HELP app_db_connection Database connection status (1 = OK, 0 = fail)",
+        "# TYPE app_db_connection gauge",
+        "app_db_connection {$dbStatus}",
+        "",
+        "# HELP app_cache_hits Cache hits",
+        "# TYPE app_cache_hits counter",
+        "app_cache_hits {$cacheHits}",
+        "",
+        "# HELP app_cache_misses Cache misses",
+        "# TYPE app_cache_misses counter",
+        "app_cache_misses {$cacheMisses}",
+    ];
+
+    return response(implode("\n", $metrics) . "\n", 200)
+        ->header('Content-Type', 'text/plain');
+});
+
+
 
 // Redirection root vers login
 Route::get('/', fn () => redirect()->route('login'))->middleware('guest');
@@ -100,6 +140,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('objectifs', ObjectifController::class);
     Route::get('/objectifs/{id}', [ObjectifController::class, 'show'])->name('objectifs.show');
     Route::delete('/objectifs/{id}', [ObjectifController::class, 'destroy'])->name('objectifs.destroy');
+
+    // Habitudes générales
+    Route::get('/habitudes', [HabitudeController::class, 'index'])->name('habitudes.index');
     Route::get('/ia/predict/{id}', [IAObController::class, 'predict'])->name('ia.predict');
 Route::get('/ia/huggingface-resume/{userId}', [HuggingFaceController::class, 'generateAIResume'])
     ->name('ia.huggingface.resume');
@@ -149,7 +192,16 @@ Route::resource('meal-foods', MealFoodController::class);
 Route::resource('goals', FoodGoalController::class);
 Route::delete('goals/{goal}', [FoodGoalController::class, 'destroy'])->name('goals.destroy');
 Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
-Route::get('/food-suggestions', [App\Http\Controllers\MealFoodController::class, 'suggestions'])->name('food.suggestions');
+Route::get('/food-suggestions', [MealFoodController::class, 'suggestions'])->name('food.suggestions');
+Route::post('goals/{goal}/set-active', [FoodGoalController::class, 'setActive'])->name('goals.set-active');
+Route::get('admin/activity-logs', [FoodGoalController::class, 'activityLogs'])
+    ->name('activity_logs');
+    
+
+
+
+Route::resource('categories', BadgeCategoryController::class);
+Route::resource('badges', BadgeController::class);
 
     Route::post('goals/{goal}/set-active', [FoodGoalController::class, 'setActive'])->name('goals.set-active');
     Route::get('admin/activity-logs', [FoodGoalController::class, 'activityLogs'])

@@ -65,7 +65,7 @@ class FoodGoalController extends Controller
                 $goal->setAsActive();
             }
 
-            // Log the creation of the new food goal
+            // Log yetsagel lina
             ActivityLog::create([
                 'user_id' => $goal->user_id,
                 'action' => 'created_food_goal',
