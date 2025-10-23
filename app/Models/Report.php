@@ -10,7 +10,7 @@ class Report extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reporter_id', 'post_id', 'comment_id', 'reason', 'status', 'assigned_to'
+        'reporter_id', 'post_id', 'comment_id', 'reason','description', 'status', 'assigned_to'
     ];
 
     public function reporter()

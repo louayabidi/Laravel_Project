@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Str; @endphp
 <x-layout bodyClass="g-sidenav-show bg-gray-200">
     <x-header.header></x-header.header>
 
@@ -10,12 +11,6 @@
                     <h4 class="mb-3">{{ $post->title }}</h4>
                     <p class="text-muted small mb-2">By {{ $post->user->name }} • {{ $post->created_at->diffForHumans() }}</p>
                     <div class="mb-3">{!! nl2br(e($post->content)) !!}</div>
-
-                    <div class="d-flex justify-content-end">
-                        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#reportPostModal">
-                            <i class="material-icons text-sm">flag</i> Report Post
-                        </button>
-                    </div>
                 </div>
             </div>
 
@@ -23,14 +18,27 @@
                 <div class="card-body">
                     <h5 class="text-primary mb-3">Comments ({{ $post->comments->count() }})</h5>
 
-                    <form action="{{ route('comments.store', $post) }}" method="POST" class="mb-4">
+                    <form action="{{ route('comments.store', $post) }}" method="POST" id="commentForm" class="mb-4">
                         @csrf
-                        <textarea name="content" class="form-control mb-2" rows="3" placeholder="Add a comment..." required></textarea>
-                        <button type="submit" class="btn btn-primary btn-sm">Comment</button>
+                        <textarea name="content" class="form-control mb-2 @error('content') is-invalid @enderror" rows="3" id="commentContent" placeholder="Add a comment..." required>{{ old('content') }}</textarea>
+                        
+                        <!-- Toxicity Error Message -->
+                        @error('content')
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="material-icons me-2">warning</i>
+                                {{ $message }}
+                                @if(session('toxicity_score'))
+                                    <br><small>Toxicity score: {{ number_format(session('toxicity_score') * 100, 1) }}%</small>
+                                @endif
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @enderror
+
+                        <button type="submit" id="submitBtn" class="btn btn-primary btn-sm">Comment</button>
                     </form>
 
                     @php
-                        $comments = $post->comments()->withCount('likes')->orderByDesc('likes_count')->get();
+                    $comments = $post->comments()->withCount('likes')->orderByDesc('likes_count')->get();
                     @endphp
 
                     @foreach($comments as $comment)
@@ -41,6 +49,22 @@
                         </div>
                         <p class="mt-2 mb-2">{{ $comment->content }}</p>
 
+                        <!-- Show toxicity badge if comment was flagged -->
+                        @if($comment->toxicity_score)
+                            @php
+                                $toxicityData = json_decode($comment->toxicity_score, true);
+                                $maxScore = $toxicityData['max_score'] ?? 0;
+                            @endphp
+                            @if($maxScore > 0.7)
+                                <div class="mb-2">
+                                    <span class="badge bg-warning">
+                                        <i class="material-icons text-sm me-1">warning</i>
+                                        Flagged Content
+                                    </span>
+                                </div>
+                            @endif
+                        @endif
+
                         <div class="d-flex align-items-center">
                             <form action="{{ route('comments.like', $comment) }}" method="POST" class="me-2">
                                 @csrf
@@ -48,11 +72,11 @@
                                     ❤️ {{ $comment->likes->count() }}
                                 </button>
                             </form>
-
+                            @if(auth()->id() !== $comment->user_id)
                             <button class="btn btn-outline-danger btn-sm me-2" data-bs-toggle="modal" data-bs-target="#reportCommentModal-{{ $comment->id }}">
                                 <i class="material-icons text-sm">flag</i> Report
                             </button>
-
+                            @endif
                             @if(auth()->id() === $comment->user_id || auth()->user()->isAdmin())
                             <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="me-2">
                                 @csrf @method('DELETE')
