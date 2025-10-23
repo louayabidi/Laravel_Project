@@ -181,6 +181,7 @@ class SanteMesureController extends Controller
 
     public function destroy(SanteMesure $sante_mesure)
     {
+
      if ($sante_mesure->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
         abort(403, 'Accès non autorisé.');
     }

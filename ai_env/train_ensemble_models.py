@@ -128,11 +128,11 @@ models_dir = os.path.join(os.path.dirname(__file__), 'models')
 os.makedirs(models_dir, exist_ok=True)
 
 print("\n" + "="*60)
-print("🚀 ENTRAÎNEMENT DE L'ENSEMBLE DE MODÈLES")
+print(" ENTRAÎNEMENT DE L'ENSEMBLE DE MODÈLES")
 print("="*60)
 
 # ============ 1. RANDOM FOREST ============
-print("\n📊 1. Entraînement du Random Forest...")
+print("\n 1. Entraînement du Random Forest...")
 rf_model = RandomForestClassifier(
     n_estimators=200,
     max_depth=10,
@@ -147,7 +147,7 @@ rf_score = rf_model.score(X, y_encoded)
 print(f"   ✓ Précision (train): {rf_score:.2%}")
 
 # ============ 2. GRADIENT BOOSTING ============
-print("\n📊 2. Entraînement du Gradient Boosting...")
+print("\n 2. Entraînement du Gradient Boosting...")
 gb_model = GradientBoostingClassifier(
     n_estimators=150,
     learning_rate=0.1,
@@ -162,7 +162,7 @@ gb_score = gb_model.score(X, y_encoded)
 print(f"   ✓ Précision (train): {gb_score:.2%}")
 
 # ============ 3. NEURAL NETWORK ============
-print("\n📊 3. Entraînement du Neural Network...")
+print("\n 3. Entraînement du Neural Network...")
 nn_model = Sequential([
     Dense(64, activation='relu', input_shape=(4,)),
     Dropout(0.3),
@@ -190,7 +190,7 @@ nn_score = nn_model.evaluate(X_scaled, y_encoded, verbose=0)[1]
 print(f"   ✓ Précision (train): {nn_score:.2%}")
 
 # ============ SAUVEGARDER LES MODÈLES ============
-print("\n💾 Sauvegarde des modèles...")
+print("\n Sauvegarde des modèles...")
 
 # Random Forest
 with open(os.path.join(models_dir, 'rf_model.pkl'), 'wb') as f:
@@ -225,11 +225,11 @@ print(f"   ✓ Feature names sauvegardés")
 
 # ============ RÉSUMÉ ============
 print("\n" + "="*60)
-print("📈 RÉSUMÉ DES PERFORMANCES")
+print(" RÉSUMÉ DES PERFORMANCES")
 print("="*60)
 print(f"Random Forest:      {rf_score:.2%}")
 print(f"Gradient Boosting:  {gb_score:.2%}")
 print(f"Neural Network:     {nn_score:.2%}")
 print(f"Moyenne:            {(rf_score + gb_score + nn_score) / 3:.2%}")
-print("\n✅ Ensemble de modèles entraîné avec succès!")
+print("\n Ensemble de modèles entraîné avec succès!")
 print("="*60)

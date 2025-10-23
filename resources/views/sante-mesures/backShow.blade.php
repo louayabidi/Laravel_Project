@@ -16,6 +16,7 @@
                     <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
                         <div class="d-flex justify-content-between align-items-center px-3">
                             <h6 class="text-white text-capitalize ps-3">Détails de la Mesure</h6>
+
                         </div>
                     </div>
                 </div>

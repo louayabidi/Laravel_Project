@@ -125,6 +125,7 @@ public function update(Request $request, Habitude $habitude)
         ->with('success', 'Habitude mise à jour !');
 }
 
+
     public function show(Habitude $habitude)
 {
     $objectif = $habitude->objectif;

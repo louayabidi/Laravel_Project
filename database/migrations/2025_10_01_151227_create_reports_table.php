@@ -14,7 +14,6 @@ class CreateReportsTable extends Migration
             $table->foreignId('post_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('comment_id')->nullable()->constrained()->cascadeOnDelete();
             $table->text('reason'); // short category or reason
-            $table->text('details')->nullable();
             $table->text('description')->nullable();
             $table->enum('status', ['pending','in_review','resolved','dismissed'])->default('pending');
             $table->foreignId('assigned_to')->nullable()->constrained('users')->nullOnDelete();

@@ -6,72 +6,6 @@
 
         <div class="container-fluid py-4">
 
-            {{-- SEARCH AND FILTER SECTION --}}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <form action="{{ route('posts.index') }}" method="GET" class="row g-3 align-items-end">
-                                <div class="col-md-6">
-                                    <label for="search" class="form-label">Rechercher</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="material-icons">search</i>
-                                        </span>
-                                        <input type="text" 
-                                               class="form-control" 
-                                               id="search" 
-                                               name="search" 
-                                               placeholder="Rechercher par titre, contenu ou auteur..."
-                                               value="{{ request('search') }}">
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-4">
-                                    <label for="tags" class="form-label">Filtrer par tags</label>
-                                    <select class="form-select" id="tags" name="tags">
-                                        <option value="">Tous les tags</option>
-                                        @foreach($allTags as $tag)
-                                            <option value="{{ $tag }}" 
-                                                {{ request('tags') == $tag ? 'selected' : '' }}>
-                                                {{ $tag }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-primary w-100">
-                                        <i class="material-icons me-1">filter_alt</i>
-                                        Filtrer
-                                    </button>
-                                </div>
-                                
-                                @if(request()->has('search') || request()->has('tags'))
-                                <div class="col-12">
-                                    <div class="d-flex align-items-center">
-                                        <span class="text-sm text-muted me-2">
-                                            @if(request('search') && request('tags'))
-                                                Résultats pour "{{ request('search') }}" avec le tag "{{ request('tags') }}"
-                                            @elseif(request('search'))
-                                                Résultats pour "{{ request('search') }}"
-                                            @elseif(request('tags'))
-                                                Posts avec le tag "{{ request('tags') }}"
-                                            @endif
-                                        </span>
-                                        <a href="{{ route('posts.index') }}" class="btn btn-sm btn-outline-secondary">
-                                            <i class="material-icons">clear</i>
-                                            Effacer
-                                        </a>
-                                    </div>
-                                </div>
-                                @endif
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             {{-- MY REPORTS BUTTON --}}
             <div class="row mb-4">
                 <div class="col-12">
@@ -79,7 +13,7 @@
                         <div class="card-body text-center">
                             <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#myReportsModal">
                                 <i class="material-icons me-2">flag</i>
-                                Mes Signalements
+                                My Reports
                                 @if($myReportsCount > 0)
                                 <span class="badge bg-danger ms-1">{{ $myReportsCount }}</span>
                                 @endif
@@ -95,14 +29,9 @@
                     <div class="card my-4">
                         <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                             <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center px-3">
-                                <h6 class="text-white text-capitalize ps-3">
-                                    Application Posts 
-                                    @if($posts->total() > 0)
-                                    <span class="badge bg-light text-dark ms-2">{{ $posts->total() }}</span>
-                                    @endif
-                                </h6>
+                                <h6 class="text-white text-capitalize ps-3">My App Posts</h6>
                                 <a href="{{ route('posts.create') }}" class="btn btn-sm btn-light">
-                                    <i class="material-icons">add</i> Nouveau Post
+                                    <i class="material-icons">add</i> New Post
                                 </a>
                             </div>
                         </div>
@@ -115,7 +44,6 @@
                             </div>
                             @endif
 
-                            @if($posts->count() > 0)
                             <div class="row g-4 p-3">
                                 @foreach($posts as $post)
                                 <div class="col-12 col-md-6 col-lg-4">
@@ -150,13 +78,12 @@
                                             @if($post->tags)
                                             <div class="mb-3">
                                                 @foreach(explode(',', $post->tags) as $tag)
-                                                @if(trim($tag) && $loop->index < 3) 
-                                                <span class="badge bg-gradient-secondary me-1 mb-1 small">{{ trim($tag) }}</span>
-                                                @endif
-                                                @endforeach
-                                                @if(count(explode(',', $post->tags)) > 3)
-                                                <span class="badge bg-dark small">+{{ count(explode(',', $post->tags)) - 3 }}</span>
-                                                @endif
+                                                @if(trim($tag) && $loop->index < 3) <span class="badge bg-gradient-secondary me-1 mb-1 small">{{ trim($tag) }}</span>
+                                                    @endif
+                                                    @endforeach
+                                                    @if(count(explode(',', $post->tags)) > 3)
+                                                    <span class="badge bg-dark small">+{{ count(explode(',', $post->tags)) - 3 }}</span>
+                                                    @endif
                                             </div>
                                             @endif
                                         </div>
@@ -209,9 +136,9 @@
                                                     <input type="hidden" name="post_id" value="{{ $post->id }}">
 
                                                     <div class="mb-3">
-                                                        <label class="form-label fw-bold">Raison</label>
+                                                        <label class="form-label fw-bold">Report Reason</label>
                                                         <select name="reason" class="form-select" required>
-                                                            <option value="">Choisir un raison</option>
+                                                            <option value="">Choose reason</option>
                                                             <option value="Spam ou publicité">Spam or advertising
                                                             </option>
                                                             <option value="Contenu inapproprié">inapropriate content</option>
@@ -227,7 +154,7 @@
                                                     </div>
 
                                                     <div class="mb-3">
-                                                        <label class="form-label fw-bold">Description Detaillées
+                                                        <label class="form-label fw-bold">Detailed description
                                                         </label>
                                                         <textarea name="description" class="form-control" rows="4" placeholder="Please provide more details about the problem
 ..." maxlength="500"></textarea>
@@ -240,8 +167,8 @@
                                                         <div class="d-flex align-items-center">
                                                             <i class="material-icons text-info me-2">info</i>
                                                             <small>
-
-                                                                Votre signalement sera examiné par notre équipe de modération. Nous traitons tous les signalements sous 24 à 48 heures.
+                                                                Your report will be reviewed by our moderation team.
+                                                                We process all reports within 24-48 hours.
                                                             </small>
                                                         </div>
                                                     </div>
@@ -250,7 +177,7 @@
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                                     <button type="submit" class="btn btn-danger">
                                                         <i class="material-icons me-1">send</i>
-                                                        Envoyer
+                                                        Send Report
                                                     </button>
                                                 </div>
                                             </form>
@@ -262,27 +189,8 @@
                             </div>
 
                             <div class="d-flex justify-content-center mt-4">
-                                {{ $posts->appends(request()->query())->links() }}
+                                {{ $posts->links() }}
                             </div>
-                            @else
-                            <div class="text-center py-5">
-                                <i class="material-icons display-4 text-muted">search_off</i>
-                                <h5 class="text-muted mt-3">Aucun post trouvé</h5>
-                                <p class="text-muted">
-                                    @if(request()->has('search') || request()->has('tags'))
-                                        Aucun résultat pour votre recherche. Essayez d'autres termes.
-                                    @else
-                                        Aucun post disponible pour le moment.
-                                    @endif
-                                </p>
-                                @if(request()->has('search') || request()->has('tags'))
-                                <a href="{{ route('posts.index') }}" class="btn btn-primary">
-                                    <i class="material-icons me-1">clear_all</i>
-                                    Voir tous les posts
-                                </a>
-                                @endif
-                            </div>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -324,7 +232,7 @@
 
                         <div class="card-footer bg-transparent border-0 pt-0 pb-3 d-flex justify-content-between align-items-center">
                             <a href="https://reddit.com{{ $data['permalink'] }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                <i class="material-icons text-sm">visibility</i> Voir
+                                <i class="material-icons text-sm">visibility</i> View
                             </a>
                             <span class="text-sm text-muted">{{ $data['ups'] }} ↑</span>
                         </div>
@@ -347,7 +255,7 @@
                 <div class="modal-header bg-gradient-info text-white">
                     <h5 class="modal-title" id="myReportsModalLabel">
                         <i class="material-icons me-2">flag</i>
-                        Mes Signalements ({{ $myReportsCount }})
+                        My Reports ({{ $myReportsCount }})
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -358,8 +266,8 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th>Post</th>
-                                    <th>Raison</th>
-                                    <th>Statut</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
                                     <th>Date</th>
                                     <th>Actions</th>
                                 </tr>
@@ -373,7 +281,7 @@
                                             {{ Str::limit($report->post->title, 40) }}
                                         </a>
                                         @else
-                                        <span class="text-muted">Post Supprimée</span>
+                                        <span class="text-muted">Post Deleted</span>
                                         @endif
                                     </td>
                                     <td>{{ $report->reason }}</td>
@@ -411,13 +319,13 @@
                     @else
                     <div class="text-center py-5">
                         <i class="material-icons display-4 text-muted">flag</i>
-                        <h5 class="text-muted mt-3">Pas de Signalements</h5>
-                        <p class="text-muted">Vous n'avez pas encore fait de signalement .</p>
+                        <h5 class="text-muted mt-3">No Reports</h5>
+                        <p class="text-muted">You have not made any reports yet.</p>
                     </div>
                     @endif
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -429,20 +337,20 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-gradient-info text-white">
-                    <h6 class="modal-title">Détailles de signalements</h6>
+                    <h6 class="modal-title">Report Details</h6>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <strong>Post Signalée:</strong>
+                            <strong>Post Reported:</strong>
                             <p class="mb-2">
                                 @if($report->post)
                                 <a href="{{ route('posts.show', $report->post) }}" class="text-decoration-none">
                                     {{ $report->post->title }}
                                 </a>
                                 @else
-                                <span class="text-muted">Post Supprimée</span>
+                                <span class="text-muted">Post Deleted</span>
                                 @endif
                             </p>
                         </div>
@@ -467,7 +375,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <strong>Raison:</strong>
+                        <strong>Reason:</strong>
                         <p class="mb-1">{{ $report->reason }}</p>
                     </div>
 
@@ -480,7 +388,7 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <strong>Signalement Date:</strong>
+                            <strong>Report Date:</strong>
                             <p class="mb-1">{{ $report->created_at->format('d/m/Y à H:i') }}</p>
                         </div>
                         <div class="col-md-6">
@@ -490,7 +398,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -542,15 +450,6 @@
                     }
                 });
             });
-
-            // Auto-focus on search input when page loads if there's a search term
-            <?php if(request('search')): ?>
-            const searchInput = document.getElementById('search');
-            if (searchInput) {
-                searchInput.focus();
-                searchInput.select();
-            }
-            <?php endif; ?>
         });
 
         // Form validation
@@ -606,11 +505,6 @@
 
         .table-hover tbody tr:hover {
             background-color: rgba(0, 0, 0, 0.075);
-        }
-
-        .input-group-text {
-            background-color: #f8f9fa;
-            border-color: #ced4da;
         }
     </style>
 </x-layout>

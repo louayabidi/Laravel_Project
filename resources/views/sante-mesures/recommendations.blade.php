@@ -45,7 +45,7 @@
 
             <!-- Source IA -->
             <p style="color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">
-                <strong>Généré par Intelligence Artificielle Locale</strong> (Ensemble: Random Forest + Gradient Boosting - 95%+ Accuracy)
+                <strong>Généré par Intelligence Artificielle Locale</strong> 
             </p>
 
             <!-- Liste des recommandations -->

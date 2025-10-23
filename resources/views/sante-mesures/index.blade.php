@@ -31,7 +31,7 @@
                                 <div class="card-header bg-gradient-warning">
                                     <h5 class="mb-0 text-white d-flex align-items-center">
                                         <i class="material-icons me-2">health_and_safety</i>
-                                        IA de Diagnostic Préventif - Analyse des Tendances (30 derniers jours)
+                                        IA de Diagnostic Préventif - Analyse des Tendances 
                                     </h5>
                                 </div>
                                 <div class="card-body">
@@ -69,7 +69,7 @@
                                         <div class="mb-2">
                                             <small class="text-muted">
                                                 <i class="fas fa-brain me-1"></i>
-                                                Généré par Intelligence Artificielle Locale (Ensemble: Random Forest + Gradient Boosting - 95%+ Accuracy)
+                                                Généré par Intelligence Artificielle Locale 
                                             </small>
                                         </div>
                                         <ul class="list-group list-group-flush">

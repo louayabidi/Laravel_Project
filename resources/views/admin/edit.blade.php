@@ -45,7 +45,7 @@
                                     <div class="row">
                                         <div class="col-md-12 mb-3">
                                             <div class="input-group input-group-static">
-                                                <label class="ms-0" for="content">Contenu *</label>
+                                                <label class="ms-0" for="content">Content *</label>
                                                 <textarea class="form-control @error('content') is-invalid @enderror" name="content" id="content" rows="10" required>{{ old('content', $post->content) }}</textarea>
                                                 @error('content')
                                                 <div class="invalid-feedback">{{ $message }}</div>
