@@ -80,6 +80,43 @@
                     </div>
                 @endforeach
             </div>
+              <div class="card mt-5">
+                    <div class="card-header">
+                        <h4>Leaderboard: Top Students with Badges</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            @foreach ($leaderboard as $index => $lbUser)
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span onclick="window.location='{{ route('user-profile.show', $lbUser->id) }}'">#{{ $index + 1 }} {{ $lbUser->name }}</span>
+                                        <span class="badge bg-primary rounded-pill">{{ $lbUser->badge_count }} badges</span>
+                                    </div>
+
+                                    <div class="d-flex flex-wrap">
+                                        @foreach ($lbUser->random_badges as $badge)
+                                            <img src="{{ asset('storage/' . $badge->image) }}"
+                                                alt="{{ $badge->name }}"
+                                                title="{{ $badge->name }}"
+                                                class="me-2 mb-2"
+                                                style="width:50px; height:50px; object-fit:cover; border-radius:5px;"
+                                                onclick="window.location='{{ route('badges.show', $badge->id) }}'">
+                                        @endforeach
+
+                                        @if($lbUser->extra_badges > 0)
+                                            <span class="align-self-center ms-2 text-muted">
+                                                {{ $lbUser->extra_badges }} more
+                                            </span>
+                                        @endif
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
         </div> <!-- End card body -->
     </div>
 </main>

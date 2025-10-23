@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -37,6 +38,13 @@ class ProfileController extends Controller
         $badges = $user->badges; // eager-load if needed: $user->load('badges');
 
         return view('pages.profile', compact('badges'));
+    }
+    public function show(User $user){
+        //get the user by id
+        $user = User::findOrFail($user->id);
+        $badges = $user->badges;
+
+        return view('pages.indexProfile', compact('user','badges'));
     }
 
 }
