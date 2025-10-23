@@ -15,7 +15,17 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <!-- En-tête informatif -->
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <strong>Des erreurs ont été détectées :</strong>
+                                    <ul class="mb-0 mt-2">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
                             <div class="alert alert-info mb-4">
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-info-circle me-3 fa-lg"></i>
@@ -31,19 +41,18 @@
                                 @method('PUT')
 
                                 <div class="row">
-                                    <!-- Colonne de gauche -->
                                     <div class="col-md-6">
-                                        <!-- Date -->
                                         <div class="mb-4">
                                             <label class="form-label fw-bold">Date du suivi <span class="text-danger">*</span></label>
                                             <div class="input-group input-group-outline">
-                                                <input type="date" name="date_jour" class="form-control" 
-                                                       value="{{ $habitude->date_jour }}" required max="{{ date('Y-m-d') }}">
+                                                <input type="date" name="date_jour" class="form-control @error('date_jour') is-invalid @enderror" 
+                                                       value="{{ old('date_jour', $habitude->date_jour) }}">
                                             </div>
-                                            <small class="form-text text-muted">Date du suivi (ne peut pas être une date future)</small>
+                                            @error('date_jour')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                         </div>
 
-                                        <!-- Santé physique -->
                                         <div class="mb-4">
                                             <h6 class="text-primary mb-3">
                                                 <i class="fas fa-heartbeat me-2"></i>Santé Physique
@@ -52,31 +61,40 @@
                                             <div class="mb-3">
                                                 <label class="form-label">Sommeil <span class="text-muted">(heures)</span></label>
                                                 <div class="input-group input-group-outline">
-                                                    <input type="number" step="0.1" min="0" max="24" name="sommeil_heures" 
-                                                           class="form-control" value="{{ $habitude->sommeil_heures }}">
+                                                    <input type="number" step="0.1" name="sommeil_heures" 
+                                                           class="form-control @error('sommeil_heures') is-invalid @enderror" 
+                                                           value="{{ old('sommeil_heures', $habitude->sommeil_heures) }}">
                                                     <span class="input-group-text">h</span>
                                                 </div>
-                                                <small class="form-text text-muted">Durée totale de sommeil</small>
+                                                @error('sommeil_heures')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">Eau consommée <span class="text-muted">(litres)</span></label>
                                                 <div class="input-group input-group-outline">
-                                                    <input type="number" step="0.1" min="0" max="10" name="eau_litres" 
-                                                           class="form-control" value="{{ $habitude->eau_litres }}">
+                                                    <input type="number" step="0.1" name="eau_litres" 
+                                                           class="form-control @error('eau_litres') is-invalid @enderror" 
+                                                           value="{{ old('eau_litres', $habitude->eau_litres) }}">
                                                     <span class="input-group-text">L</span>
                                                 </div>
-                                                <small class="form-text text-muted">Quantité d'eau bue dans la journée</small>
+                                                @error('eau_litres')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">Activité sportive <span class="text-muted">(minutes)</span></label>
                                                 <div class="input-group input-group-outline">
-                                                    <input type="number" min="0" max="480" name="sport_minutes" 
-                                                           class="form-control" value="{{ $habitude->sport_minutes }}">
+                                                    <input type="number" name="sport_minutes" 
+                                                           class="form-control @error('sport_minutes') is-invalid @enderror" 
+                                                           value="{{ old('sport_minutes', $habitude->sport_minutes) }}">
                                                     <span class="input-group-text">min</span>
                                                 </div>
-                                                <small class="form-text text-muted">Temps d'activité physique</small>
+                                                @error('sport_minutes')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
@@ -92,21 +110,27 @@
                                             <div class="mb-3">
                                                 <label class="form-label">Niveau de stress <span class="text-muted">(1-10)</span></label>
                                                 <div class="input-group input-group-outline">
-                                                    <input type="number" min="1" max="10" name="stress_niveau" 
-                                                           class="form-control" value="{{ $habitude->stress_niveau }}">
+                                                    <input type="number" name="stress_niveau" 
+                                                           class="form-control @error('stress_niveau') is-invalid @enderror" 
+                                                           value="{{ old('stress_niveau', $habitude->stress_niveau) }}">
                                                     <span class="input-group-text">/10</span>
                                                 </div>
-                                                <small class="form-text text-muted">1 = Très calme, 10 = Très stressé</small>
+                                                @error('stress_niveau')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">Méditation <span class="text-muted">(minutes)</span></label>
                                                 <div class="input-group input-group-outline">
-                                                    <input type="number" min="0" max="240" name="meditation_minutes" 
-                                                           class="form-control" value="{{ $habitude->meditation_minutes }}">
+                                                    <input type="number" name="meditation_minutes" 
+                                                           class="form-control @error('meditation_minutes') is-invalid @enderror" 
+                                                           value="{{ old('meditation_minutes', $habitude->meditation_minutes) }}">
                                                     <span class="input-group-text">min</span>
                                                 </div>
-                                                <small class="form-text text-muted">Temps de méditation ou relaxation</small>
+                                                @error('meditation_minutes')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                             </div>
                                         </div>
 
@@ -119,21 +143,27 @@
                                             <div class="mb-3">
                                                 <label class="form-label">Temps d'écran <span class="text-muted">(minutes)</span></label>
                                                 <div class="input-group input-group-outline">
-                                                    <input type="number" min="0" max="960" name="temps_ecran_minutes" 
-                                                           class="form-control" value="{{ $habitude->temps_ecran_minutes }}">
+                                                    <input type="number" name="temps_ecran_minutes" 
+                                                           class="form-control @error('temps_ecran_minutes') is-invalid @enderror" 
+                                                           value="{{ old('temps_ecran_minutes', $habitude->temps_ecran_minutes) }}">
                                                     <span class="input-group-text">min</span>
                                                 </div>
-                                                <small class="form-text text-muted">Temps total passé sur les écrans</small>
+                                                @error('temps_ecran_minutes')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">Café <span class="text-muted">(tasses)</span></label>
                                                 <div class="input-group input-group-outline">
-                                                    <input type="number" min="0" max="20" name="cafe_cups" 
-                                                           class="form-control" value="{{ $habitude->cafe_cups }}">
+                                                    <input type="number" name="cafe_cups" 
+                                                           class="form-control @error('cafe_cups') is-invalid @enderror" 
+                                                           value="{{ old('cafe_cups', $habitude->cafe_cups) }}">
                                                     <span class="input-group-text">tasses</span>
                                                 </div>
-                                                <small class="form-text text-muted">Nombre de tasses de café consommées</small>
+                                                @error('cafe_cups')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>

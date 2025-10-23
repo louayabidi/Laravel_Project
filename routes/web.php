@@ -22,6 +22,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\IAObController;
 use App\Http\Controllers\SanteMesureController;
 use App\Http\Controllers\AiTestController;
+use App\Http\Controllers\HuggingFaceController;
 
 
 // Root redirect
@@ -100,9 +101,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/objectifs/{id}', [ObjectifController::class, 'show'])->name('objectifs.show');
     Route::delete('/objectifs/{id}', [ObjectifController::class, 'destroy'])->name('objectifs.destroy');
     Route::get('/ia/predict/{id}', [IAObController::class, 'predict'])->name('ia.predict');
-
-    // Habitudes générales
-    Route::get('/habitudes', [HabitudeController::class, 'index'])->name('habitudes.index');
+Route::get('/ia/huggingface-resume/{userId}', [HuggingFaceController::class, 'generateAIResume'])
+    ->name('ia.huggingface.resume');
 
     // Habitudes CRUD classiques
     Route::put('/habitudes/{habitude}', [HabitudeController::class, 'update'])->name('habitudes.update');

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Habitude;
 use Illuminate\Http\Request;
+use App\Http\Requests\HabitudeRequest;
 
 class HabitudeController extends Controller
 {
@@ -36,26 +37,17 @@ class HabitudeController extends Controller
         return view('habitudes.create', compact('objectifId'));
     }
 
-    public function store(Request $request, $objectifId)
+    public function store(HabitudeRequest $request, $objectifId)
     {
-        $validated = $request->validate([
-            'date_jour' => 'required|date',
-            'sommeil_heures' => 'nullable|numeric|min:0',
-            'eau_litres' => 'nullable|numeric|min:0',
-            'sport_minutes' => 'nullable|integer|min:0',
-            'stress_niveau' => 'nullable|integer|min:0|max:10',
-            'meditation_minutes' => 'nullable|integer|min:0',
-            'temps_ecran_minutes' => 'nullable|integer|min:0',
-            'cafe_cups' => 'nullable|integer|min:0',
-        ]);
-
+        $validated = $request->validated();
         $validated['user_id'] = auth()->id();
         $validated['objectif_id'] = $objectifId;
 
         Habitude::create($validated);
 
-        return redirect()->route('objectifs.habitudes.index', $objectifId)
-            ->with('success', 'Habitude ajoutée !');
+        return redirect()
+            ->route('objectifs.habitudes.index', $objectifId)
+            ->with('success', 'Habitude ajoutée avec succès !');
     }
 
    public function edit($objectifId, Habitude $habitude)
@@ -68,29 +60,19 @@ class HabitudeController extends Controller
     return view('habitudes.edit', compact('habitude', 'objectifId'));
 }
 
-public function update(Request $request, Habitude $habitude)
-{
-    if ($habitude->objectif->user_id !== auth()->id()) {
-        abort(403, 'Accès non autorisé.');
+ public function update(HabitudeRequest $request, Habitude $habitude)
+    {
+        if ($habitude->objectif->user_id !== auth()->id()) {
+            abort(403, 'Accès non autorisé.');
+        }
+
+        $validated = $request->validated();
+        $habitude->update($validated);
+
+        return redirect()
+            ->route('objectifs.habitudes.index', $habitude->objectif_id)
+            ->with('success', 'Habitude mise à jour avec succès !');
     }
-
-    $validated = $request->validate([
-        'date_jour' => 'required|date',
-        'sommeil_heures' => 'nullable|numeric|min:0',
-        'eau_litres' => 'nullable|numeric|min:0',
-        'sport_minutes' => 'nullable|integer|min:0',
-        'stress_niveau' => 'nullable|integer|min:0|max:10',
-        'meditation_minutes' => 'nullable|integer|min:0',
-        'temps_ecran_minutes' => 'nullable|integer|min:0',
-        'cafe_cups' => 'nullable|integer|min:0',
-    ]);
-
-    $habitude->update($validated);
-
-    return redirect()
-        ->route('objectifs.habitudes.index', $habitude->objectif_id)
-        ->with('success', 'Habitude mise à jour !');
-}
 
     
     public function show(Habitude $habitude)

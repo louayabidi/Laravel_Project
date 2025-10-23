@@ -13,117 +13,142 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('objectifs.update', $objectif) }}" method="POST">
+                            
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <strong>Erreurs de validation :</strong>
+                                    <ul class="mb-0 mt-2">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <form action="{{ route('objectifs.update', $objectif) }}" method="POST" novalidate>
                                 @csrf
                                 @method('PUT')
 
                                 <div class="row">
-                                    <!-- Colonne de gauche -->
+                                    <!-- Colonne gauche -->
                                     <div class="col-md-6">
                                         <!-- Titre -->
                                         <div class="mb-4">
                                             <label class="form-label fw-bold">Titre de l'objectif</label>
                                             <div class="input-group input-group-outline">
-                                                <input type="text" name="title" class="form-control" 
-                                                       value="{{ old('title', $objectif->title) }}" 
-                                                       placeholder="Ex: Boire plus d'eau" required>
+                                                <input 
+                                                    type="text" 
+                                                    name="title" 
+                                                    class="form-control @error('title') is-invalid @enderror"
+                                                    value="{{ old('title', $objectif->title) }}" 
+                                                    placeholder="Ex: Boire plus d'eau">
                                             </div>
-                                            <small class="form-text text-muted">Modifiez le nom de votre objectif</small>
+                                            @error('title')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                         </div>
 
-                                        <!-- Type d'objectif -->
+                                        <!-- Catégorie -->
                                         <div class="mb-4">
                                             <label class="form-label fw-bold">Catégorie</label>
                                             <div class="input-group input-group-outline">
-                                                <select name="status" class="form-control" required>
-                                                    <option value="Sommeil" {{ $objectif->status == 'Sommeil' ? 'selected' : '' }}>Sommeil</option>
-                                                    <option value="Eau" {{ $objectif->status == 'Eau' ? 'selected' : '' }}>Eau</option>
-                                                    <option value="Sport" {{ $objectif->status == 'Sport' ? 'selected' : '' }}>Sport</option>
-                                                    <option value="Stress" {{ $objectif->status == 'Stress' ? 'selected' : '' }}>Stress</option>
+                                                <select name="status" class="form-control @error('status') is-invalid @enderror">
+                                                    <option value="Sommeil" {{ old('status', $objectif->status) == 'Sommeil' ? 'selected' : '' }}>Sommeil</option>
+                                                    <option value="Eau" {{ old('status', $objectif->status) == 'Eau' ? 'selected' : '' }}>Eau</option>
+                                                    <option value="Sport" {{ old('status', $objectif->status) == 'Sport' ? 'selected' : '' }}>Sport</option>
+                                                    <option value="Stress" {{ old('status', $objectif->status) == 'Stress' ? 'selected' : '' }}>Stress</option>
                                                 </select>
                                             </div>
-                                            <small class="form-text text-muted">Sélectionnez la catégorie de votre objectif</small>
+                                            @error('status')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                         </div>
 
                                         <!-- Valeur cible -->
                                         <div class="mb-4">
                                             <label class="form-label fw-bold">Valeur cible</label>
                                             <div class="input-group input-group-outline">
-                                                <input type="number" name="target_value" class="form-control" 
-                                                       value="{{ old('target_value', $objectif->target_value) }}" 
-                                                       placeholder="Ex: 8" required>
+                                                <input 
+                                                    type="number" 
+                                                    name="target_value" 
+                                                    class="form-control @error('target_value') is-invalid @enderror"
+                                                    value="{{ old('target_value', $objectif->target_value) }}" 
+                                                    placeholder="Ex: 8">
                                             </div>
-                                            <small class="form-text text-muted">Ajustez la valeur à atteindre</small>
+                                            @error('target_value')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                         </div>
                                     </div>
 
-                                    <!-- Colonne de droite -->
+                                    <!-- Colonne droite -->
                                     <div class="col-md-6">
                                         <!-- Description -->
                                         <div class="mb-4">
                                             <label class="form-label fw-bold">Description</label>
                                             <div class="input-group input-group-outline">
-                                                <textarea name="description" class="form-control" rows="4" 
-                                                          placeholder="Décrivez votre objectif en détail...">{{ old('description', $objectif->description) }}</textarea>
+                                                <textarea 
+                                                    name="description" 
+                                                    class="form-control @error('description') is-invalid @enderror" 
+                                                    rows="4" 
+                                                    placeholder="Décrivez votre objectif en détail...">{{ old('description', $objectif->description) }}</textarea>
                                             </div>
-                                            <small class="form-text text-muted">Optionnel - Modifiez la description si nécessaire</small>
+                                            @error('description')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                         </div>
 
                                         <!-- Période -->
-                                        <div class="mb-4">
-                                            <label class="form-label fw-bold mb-3">Période de l'objectif</label>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Date de début</label>
-                                                        <div class="input-group input-group-outline">
-                                                            <input type="date" name="start_date" class="form-control" 
-                                                                   value="{{ old('start_date', $objectif->start_date) }}" required>
-                                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-4">
+                                                    <label class="form-label fw-bold">Date de début</label>
+                                                    <div class="input-group input-group-outline">
+                                                        <input 
+                                                            type="date" 
+                                                            name="start_date" 
+                                                            class="form-control @error('start_date') is-invalid @enderror"
+                                                            value="{{ old('start_date', $objectif->start_date) }}">
                                                     </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Date de fin</label>
-                                                        <div class="input-group input-group-outline">
-                                                            <input type="date" name="end_date" class="form-control" 
-                                                                   value="{{ old('end_date', $objectif->end_date) }}" required>
-                                                        </div>
-                                                    </div>
+                                                    @error('start_date')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
                                                 </div>
                                             </div>
-                                            <small class="form-text text-muted">Ajustez la période pour atteindre votre objectif</small>
+                                            <div class="col-md-6">
+                                                <div class="mb-4">
+                                                    <label class="form-label fw-bold">Date de fin</label>
+                                                    <div class="input-group input-group-outline">
+                                                        <input 
+                                                            type="date" 
+                                                            name="end_date" 
+                                                            class="form-control @error('end_date') is-invalid @enderror"
+                                                            value="{{ old('end_date', $objectif->end_date) }}">
+                                                    </div>
+                                                    @error('end_date')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Informations de suivi (optionnel) -->
-                                <div class="alert alert-info mt-3">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        <span>
-                                            <strong>Conseil :</strong> 
-                                            Pensez à vérifier la cohérence entre votre valeur cible et la période définie.
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <!-- Boutons d'action -->
+                                <!-- Boutons -->
                                 <div class="d-flex justify-content-between mt-4 pt-3 border-top">
                                     <a href="{{ route('objectifs.index') }}" class="btn btn-outline-secondary">
-                                        <i class="fas fa-arrow-left me-2"></i>Annuler et retourner
+                                        <i class="fas fa-arrow-left me-2"></i>Annuler
                                     </a>
-                                    <div>
-                                        <button type="submit" class="btn bg-gradient-primary px-4">
-                                            <i class="fas fa-save me-2"></i>Mettre à jour
-                                        </button>
-                                    </div>
+                                    <button type="submit" class="btn bg-gradient-primary px-4">
+                                        <i class="fas fa-save me-2"></i>Mettre à jour
+                                    </button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
+
             <x-footers.auth></x-footers.auth>
         </div>
     </main>

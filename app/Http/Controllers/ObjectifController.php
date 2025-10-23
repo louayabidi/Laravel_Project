@@ -5,20 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Objectif;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use App\Http\Requests\StoreObjectifRequest;
+
 
 class ObjectifController extends Controller
 {
-//    public function index()
-// {
-//     $userId = auth()->id();
-
-//     $objectifs = Objectif::where('user_id', auth()->id())
-//                      ->with('habitudes')
-//                      ->paginate(10);
-
-
-//     return view('objectifs.index', compact('objectifs'));
-// }
 
 public function index(Request $request)
 {
@@ -37,21 +28,18 @@ public function index(Request $request)
         return view('objectifs.create');
     }
 
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'target_value' => 'required|integer',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
-            'status' => 'required|in:Sommeil,Eau,Sport,Stress',
-        ]);
-        $data['user_id'] = auth()->id(); 
-        Objectif::create($data);
+public function store(StoreObjectifRequest $request)
+{
+    $data = $request->validated();
 
-        return redirect()->route('objectifs.index')->with('success', 'Objectif ajouté !');
-    }
+    $data['user_id'] = auth()->id();
+
+    Objectif::create($data);
+
+    return redirect()
+        ->route('objectifs.index')
+        ->with('success', 'Objectif ajouté avec succès !');
+}
 
     public function edit(Objectif $objectif)
     {
@@ -59,20 +47,21 @@ public function index(Request $request)
     }
 
     public function update(Request $request, Objectif $objectif)
-    {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'target_value' => 'required|integer',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
-            'status' => 'required|in:Sommeil,Eau,Sport,Stress',
-        ]);
+{
+    $data = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'target_value' => 'required|integer|min:1',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after_or_equal:start_date',
+        'status' => 'required|in:Sommeil,Eau,Sport,Stress',
+    ]);
 
-        $objectif->update($data);
+    $objectif->update($data);
 
-        return redirect()->route('objectifs.index')->with('success', 'Objectif modifié !');
-    }
+    return redirect()->route('objectifs.index')->with('success', 'Objectif mis à jour avec succès !');
+}
+
 
     public function destroy($id)
 {

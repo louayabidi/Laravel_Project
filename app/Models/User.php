@@ -70,11 +70,11 @@ class User extends Authenticatable
 {
     return $this->hasMany(SanteMesure::class);
 }
-    public function habitudes()
+public function objectifs()
 {
-    return $this->hasMany(Habitude::class);
-
+    return $this->hasMany(Objectif::class, 'user_id', 'id');
 }
+
 public function badges()
 {
     return $this->belongsToMany(Badge::class, 'badge_user')->withTimestamps();

@@ -5,15 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Objectif;
 use Illuminate\Support\Facades\Http;
-
+use App\Models\User;
 class IAObController extends Controller
 {
-    public function predict($id) // Changez Objectif $objectif en $id
+    public function predict($id) 
     {
-        // Récupérer l'objectif par ID
         $objectif = Objectif::find($id);
         
-        // Vérifier si l'objectif existe
         if (!$objectif) {
             return response()->json([
                 'message' => 'Objectif non trouvé'
@@ -28,7 +26,6 @@ class IAObController extends Controller
             ], 400);
         }
 
-        // Préparer les données pour le serveur ML
         $data = [
             'avg_sommeil' => $habitudes->avg('sommeil_heures') ?? 0,
             'avg_eau' => $habitudes->avg('eau_litres') ?? 0,
@@ -69,4 +66,6 @@ class IAObController extends Controller
             ], 500);
         }
     }
+
+
 }
