@@ -1,0 +1,27 @@
+name: Monitor with Prometheus and Grafana
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: |
+          docker-compose up -d  # Lance ton app, NGINX, Prometheus, Grafana
+
+      - name: Wait for services
+        run: sleep 30  # Temps pour que les conteneurs démarrent
+
+      - name: Check Prometheus targets
+        run: |
+          curl -s http://localhost:9090/api/v1/targets | grep -q "up"  # Vérifie si les cibles sont up
+          if [ $? -ne 0 ]; then echo "Prometheus target failed"; exit 1; fi
+
+      - name: Verify Grafana
+        run: |
+          curl -s http://localhost:3000/api/health  # Vérifie que Grafana est opérationnel

@@ -29,8 +29,9 @@ Route::get('/', function () {
 
 use App\Http\Controllers\SanteMesureController;
 use App\Http\Controllers\ObjectifController;
-
-
+use App\Http\Controllers\MetricsController;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 Route::get('/meals/add-by-image', [MealController::class, 'showAddByImageForm'])->name('meals.add-by-image-form');
 Route::post('/meals/add-by-image', [MealController::class, 'addByImage'])->name('meals.add-by-image');
@@ -40,6 +41,36 @@ Route::post('/meals/add-by-image', [MealController::class, 'addByImage'])->name(
 |--------------------------------------------------------------------------
 */
 
+//pour prometheus 
+
+// routes/web.php
+Route::get('/metrics', function () {
+    $uptime = time() - LARAVEL_START;
+    $dbStatus = DB::connection()->getPdo() ? 1 : 0;
+    $cacheHits = Cache::get('cache_hits', 0);
+    $cacheMisses = Cache::get('cache_misses', 0);
+
+    $metrics = [
+        "# HELP app_uptime_seconds Application uptime in seconds",
+        "# TYPE app_uptime_seconds counter",
+        "app_uptime_seconds {$uptime}",
+        "",
+        "# HELP app_db_connection Database connection status (1 = OK, 0 = fail)",
+        "# TYPE app_db_connection gauge",
+        "app_db_connection {$dbStatus}",
+        "",
+        "# HELP app_cache_hits Cache hits",
+        "# TYPE app_cache_hits counter",
+        "app_cache_hits {$cacheHits}",
+        "",
+        "# HELP app_cache_misses Cache misses",
+        "# TYPE app_cache_misses counter",
+        "app_cache_misses {$cacheMisses}",
+    ];
+
+    return response(implode("\n", $metrics) . "\n", 200)
+        ->header('Content-Type', 'text/plain');
+});
 
 
 
