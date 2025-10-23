@@ -143,8 +143,8 @@ Route::middleware('auth')->group(function () {
     // Habitudes générales
     Route::get('/habitudes', [HabitudeController::class, 'index'])->name('habitudes.index');
     Route::get('/ia/predict/{id}', [IAObController::class, 'predict'])->name('ia.predict');
-Route::get('/ia/huggingface-resume/{userId}', [HuggingFaceController::class, 'generateAIResume'])
-    ->name('ia.huggingface.resume');
+    Route::get('/ia/huggingface-resume/{userId}', [HuggingFaceController::class, 'generateAIResume'])
+        ->name('ia.huggingface.resume');
 
     // Habitudes CRUD classiques
     Route::put('/habitudes/{habitude}', [HabitudeController::class, 'update'])->name('habitudes.update');
@@ -183,32 +183,32 @@ Route::get('/ia/huggingface-resume/{userId}', [HuggingFaceController::class, 'ge
     Route::post('ai-test/test', [AiTestController::class, 'test'])->name('ai-test.test');
     Route::get('ai-test/sample', [AiTestController::class, 'sample'])->name('ai-test.sample');
 
-   // gestion alimentaire
-Route::resource('foods', FoodController::class);
-Route::resource('meals', MealController::class);
-Route::resource('analytics', AnalyticController::class);
-Route::resource('meal-foods', MealFoodController::class);
-Route::resource('goals', FoodGoalController::class);
-Route::delete('goals/{goal}', [FoodGoalController::class, 'destroy'])->name('goals.destroy');
-Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
-Route::get('/food-suggestions', [MealFoodController::class, 'suggestions'])->name('food.suggestions');
-Route::post('goals/{goal}/set-active', [FoodGoalController::class, 'setActive'])->name('goals.set-active');
-Route::get('admin/activity-logs', [FoodGoalController::class, 'activityLogs'])
-    ->name('activity_logs');
-    
+    // gestion alimentaire
+    Route::resource('foods', FoodController::class);
+    Route::resource('meals', MealController::class);
+    Route::resource('analytics', AnalyticController::class);
+    Route::resource('meal-foods', MealFoodController::class);
+    Route::resource('goals', FoodGoalController::class);
+    Route::delete('goals/{goal}', [FoodGoalController::class, 'destroy'])->name('goals.destroy');
+    Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
+    Route::get('/food-suggestions', [MealFoodController::class, 'suggestions'])->name('food.suggestions');
+    Route::post('goals/{goal}/set-active', [FoodGoalController::class, 'setActive'])->name('goals.set-active');
+    Route::get('admin/activity-logs', [FoodGoalController::class, 'activityLogs'])
+        ->name('activity_logs');
 
 
 
-Route::resource('categories', BadgeCategoryController::class);
-Route::resource('badges', BadgeController::class);
+
+    Route::resource('categories', BadgeCategoryController::class);
+    Route::resource('badges', BadgeController::class);
 
     Route::post('goals/{goal}/set-active', [FoodGoalController::class, 'setActive'])->name('goals.set-active');
     Route::get('admin/activity-logs', [FoodGoalController::class, 'activityLogs'])
         ->name('activity_logs');
 
-Route::resource('categories', BadgeCategoryController::class);
-Route::resource('badges', BadgeController::class);
-Route::get('user-profile/{user}', [ProfileController::class, 'show'])->name('user-profile.show');
+    Route::resource('categories', BadgeCategoryController::class);
+    Route::resource('badges', BadgeController::class);
+    Route::get('user-profile/{user}', [ProfileController::class, 'show'])->name('user-profile.show');
 
     // forum
     Route::resource('posts', PostController::class);
@@ -226,6 +226,8 @@ Route::get('user-profile/{user}', [ProfileController::class, 'show'])->name('use
 
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::delete('/posts/{post}', [PostController::class, 'adminDestroy'])->name('admin.destroy');
+
     Route::post('/posts/{post}/hide', [PostController::class, 'hide'])->name('posts.hide');
     Route::post('/posts/{post}/unhide', [PostController::class, 'unhide'])->name('posts.unhide');
     Route::get('/admin/hidden-posts', [PostController::class, 'hiddenPosts'])->name('posts.hidden');

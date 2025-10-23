@@ -279,7 +279,7 @@
                                             </div>
                                             <div>
                                                 @if(auth()->id() === $post->user_id || auth()->user()->isAdmin())
-                                                    <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
+                                                    <form action="{{ route('admin.destroy', $post) }}" method="POST" class="d-inline">
                                                         @csrf @method('DELETE')
                                                         <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer définitivement ce post ?')" class="btn btn-danger btn-sm">
                                                             <i class="material-icons">delete</i> Supprimer

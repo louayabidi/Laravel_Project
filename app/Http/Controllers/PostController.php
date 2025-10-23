@@ -231,6 +231,20 @@ class PostController extends Controller
             ->with('success', 'Post deleted successfully!');
     }
 
+    public function adminDestroy($id)
+    {
+        $post = Post::findOrFail($id);
+
+        // Only post owner or admin can delete
+        if (Auth::id() !== $post->user_id && !(Auth::check() && Auth::user()->isAdmin())) {
+            abort(403);
+        }
+
+        $post->delete();
+
+        return redirect()->route('admin.index')
+            ->with('success', 'Post deleted successfully!');
+    }
     /**
      * Admin function to hide a post
      */

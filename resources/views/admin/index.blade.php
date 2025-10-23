@@ -121,7 +121,7 @@
                                                     </button>
                                                     @endif
                                                     <!-- Delete Button -->
-                                                    <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
+                                                    <form action="{{ route('admin.destroy', $post) }}" method="POST" class="d-inline">
                                                         @csrf @method('DELETE')
                                                         <button type="submit" onclick="return confirm('Supprimer définitivement ce post ?')" class="btn btn-sm btn-outline-danger me-1" title="Supprimer">
                                                             <i class="material-icons text-sm">delete</i>
