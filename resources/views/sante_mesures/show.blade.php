@@ -45,7 +45,7 @@
                             <div class="card-header bg-gradient-warning">
                                 <h5 class="mb-0 text-white d-flex align-items-center">
                                     <i class="material-icons me-2">health_and_safety</i>
-                                    IA de Diagnostic Préventif - Analyse des Tendances 
+                                    IA de Diagnostic Préventif - Analyse des Tendances (30 derniers jours)
                                 </h5>
                             </div>
                             <div class="card-body">

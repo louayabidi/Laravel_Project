@@ -1,4 +1,1 @@
-flask
-numpy
-joblib
-scikit-learn
+guzzlehttp/guzzle==^7.10

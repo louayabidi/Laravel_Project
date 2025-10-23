@@ -104,7 +104,7 @@
                         <div class="card-header bg-gradient-info">
                             <h5 class="mb-0 text-white d-flex align-items-center">
                                 <i class="fas fa-brain me-2"></i>
-                                IA - Analyse de Santé Personnalisée 
+                                IA - Analyse de Santé Personnalisée (30 derniers jours)
                             </h5>
                         </div>
                         <div class="card-body">

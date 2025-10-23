@@ -37,7 +37,7 @@ class IAObController extends Controller
         ];
 
         try {
-            $response = Http::timeout(10)->post('http://host.docker.internal:5001/predict', $data);
+            $response = Http::timeout(10)->post('http://127.0.0.1:5001/predict', $data);
             
             if (!$response->successful()) {
                 throw new \Exception('Erreur HTTP: ' . $response->status());
