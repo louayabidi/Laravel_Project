@@ -21,7 +21,6 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReportController;
 
 use App\Http\Controllers\IAObController;
-use App\Http\Controllers\SanteMesureController;
 use App\Http\Controllers\AiTestController;
 use App\Http\Controllers\HuggingFaceController;
 
