@@ -38,6 +38,8 @@ COPY . /var/www
 # Install Composer dependencies
 RUN composer install --no-scripts --no-interaction --optimize-autoloader
 
+
+RUN cp .env.example .env
 # Generate Laravel application key
 RUN php artisan key:generate
 
