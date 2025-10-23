@@ -7,6 +7,7 @@ services:
     container_name: laravel-app
     volumes:
       - ./:/var/www
+      - ./.env:/var/www/.env
     networks:
       - laravel
     depends_on:
