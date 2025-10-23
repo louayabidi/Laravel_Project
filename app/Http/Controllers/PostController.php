@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Http;
 
 use App\Models\Post;
+use App\Models\Report;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -44,7 +46,19 @@ class PostController extends Controller
         $redditPosts = [];
     }
 
-    return view('posts.index', compact('posts', 'redditPosts'));
+    // Get user's reports - ADD THIS SECTION
+    $myReports = collect();
+    $myReportsCount = 0;
+    
+    if (Auth::check()) {
+        $myReports = Report::with(['post.user'])
+            ->where('reporter_id', Auth::id())
+            ->latest()
+            ->get();
+        $myReportsCount = $myReports->count();
+    }
+
+    return view('posts.index', compact('posts', 'redditPosts', 'myReports', 'myReportsCount'));
 }
 
     /**
@@ -207,13 +221,19 @@ class PostController extends Controller
 
         return view('posts.hidden', compact('posts'));
     }
-    public function adminIndex(Request $request)
+public function adminIndex(Request $request)
 {
     // Get the status filter from the request
     $status = $request->query('status', 'all');
     
-    // Start building the query
-    $query = Post::with('user');
+    // Start building the query - ADD REPORTS RELATIONSHIPS
+    $query = Post::with([
+        'user', 
+        'reports.reporter', 
+        'reports.assignedModerator',
+        'comments', // if you want comment counts
+        'likes'     // if you want like counts
+    ]);
     
     // Apply filter if not 'all'
     if ($status === 'active') {
@@ -226,5 +246,58 @@ class PostController extends Controller
     $posts = $query->latest()->paginate(12);
     
     return view('admin.index', compact('posts'));
+}
+
+/**
+ * Display the specified post for admin
+ */
+public function adminShow($id)
+{
+    if (!Auth::check() || !Auth::user()->isAdmin()) {
+        abort(403);
+    }
+
+    $post = Post::with(['user', 'comments.user', 'comments.likes.user', 
+        'comments.reports', 'likes.user', 'reports.reporter'])
+                ->findOrFail($id);
+
+    return view('admin.show', compact('post')); 
+}
+
+public function getPostReports($id)
+{
+    if (!Auth::check() || !Auth::user()->isAdmin()) {
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
+    try {
+        // Make sure to load the relationships correctly
+        $post = Post::with([
+            'reports.reporter', 
+            'reports.assignedModerator'
+        ])->findOrFail($id);
+
+        $reports = $post->reports->map(function($report) {
+            return [
+                'id' => $report->id,
+                'reason' => $report->reason,
+                'description' => $report->description,
+                'status' => $report->status,
+                'created_at' => $report->created_at,
+                'reporter_name' => $report->reporter ? $report->reporter->name : null,
+                'assigned_moderator_name' => $report->assignedModerator ? $report->assignedModerator->name : null,
+            ];
+        });
+
+        return response()->json([
+            'reports' => $reports,
+            'post_title' => $post->title
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Post not found or server error'
+        ], 404);
+    }
 }
 }
