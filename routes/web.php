@@ -19,7 +19,7 @@ use App\Http\Controllers\BadgeController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReportController;
-
+use App\Http\Controllers\IAObController;
 use App\Http\Controllers\SanteMesureController;
 use App\Http\Controllers\AiTestController;
 
@@ -29,7 +29,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->middleware('guest');
 
-use App\Http\Controllers\SanteMesureController;
 use App\Http\Controllers\ObjectifController;
 
 /*
@@ -100,6 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('objectifs', ObjectifController::class);
     Route::get('/objectifs/{id}', [ObjectifController::class, 'show'])->name('objectifs.show');
     Route::delete('/objectifs/{id}', [ObjectifController::class, 'destroy'])->name('objectifs.destroy');
+    Route::get('/ia/predict/{id}', [IAObController::class, 'predict'])->name('ia.predict');
 
     // Habitudes générales
     Route::get('/habitudes', [HabitudeController::class, 'index'])->name('habitudes.index');

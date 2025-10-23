@@ -8,14 +8,24 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ObjectifController extends Controller
 {
-   public function index()
+//    public function index()
+// {
+//     $userId = auth()->id();
+
+//     $objectifs = Objectif::where('user_id', auth()->id())
+//                      ->with('habitudes')
+//                      ->paginate(10);
+
+
+//     return view('objectifs.index', compact('objectifs'));
+// }
+
+public function index(Request $request)
 {
     $userId = auth()->id();
-
-    $objectifs = Objectif::where('user_id', auth()->id())
-                     ->with('habitudes')
-                     ->paginate(10);
-
+    $objectifs = Objectif::with('habitudes')
+                    ->where('user_id', auth()->id())
+                    ->paginate(10);
 
     return view('objectifs.index', compact('objectifs'));
 }
