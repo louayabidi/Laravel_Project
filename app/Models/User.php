@@ -70,6 +70,11 @@ class User extends Authenticatable
 {
     return $this->hasMany(SanteMesure::class);
 }
+    public function habitudes()
+{
+    return $this->hasMany(Habitude::class);
+
+}
 public function objectifs()
 {
     return $this->hasMany(Objectif::class, 'user_id', 'id');

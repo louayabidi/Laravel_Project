@@ -2,7 +2,7 @@
 <x-layout bodyClass="g-sidenav-show bg-gray-200">
     <x-navbars.sidebar activePage="sante"></x-navbars.sidebar>
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        <x-navbars.navs.auth titlePage="Post Details"></x-navbars.navs.auth>
+        <x-navbars.navs.auth titlePage="Détailles du Post"></x-navbars.navs.auth>
 
         <div class="container-fluid py-4">
             <div class="row">
@@ -10,7 +10,7 @@
                     <div class="card my-4">
                         <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                             <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center px-3">
-                                <h6 class="text-white text-capitalize ps-3">Post Details</h6>
+                                <h6 class="text-white text-capitalize ps-3">Détailles du Post</h6>
                                 <div>
                                     <a href="{{ route('admin.index') }}" class="btn btn-sm btn-light">
                                         <i class="material-icons">arrow_back</i> Retour
@@ -279,7 +279,7 @@
                                             </div>
                                             <div>
                                                 @if(auth()->id() === $post->user_id || auth()->user()->isAdmin())
-                                                    <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
+                                                    <form action="{{ route('admin.destroy', $post) }}" method="POST" class="d-inline">
                                                         @csrf @method('DELETE')
                                                         <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer définitivement ce post ?')" class="btn btn-danger btn-sm">
                                                             <i class="material-icons">delete</i> Supprimer

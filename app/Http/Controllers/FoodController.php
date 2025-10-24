@@ -5,17 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Food;
 use App\Services\NutritionService;
 use Illuminate\Http\Request;
-use App\Services\BadgeService;
-use App\Models\Badge;
+
 class FoodController extends Controller
 {
     protected $nutritionService;
-    protected $badgeService;
 
-    public function __construct(NutritionService $nutritionService, BadgeService $badgeService)
+    public function __construct(NutritionService $nutritionService)
     {
         $this->nutritionService = $nutritionService;
-        $this->badgeService = $badgeService;
     }
 
     public function index()

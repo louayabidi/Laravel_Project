@@ -45,7 +45,7 @@
                                     <div class="row">
                                         <div class="col-md-12 mb-3">
                                             <div class="input-group input-group-static">
-                                                <label class="ms-0" for="content">Content *</label>
+                                                <label class="ms-0" for="content">Contenu *</label>
                                                 <textarea class="form-control @error('content') is-invalid @enderror" name="content" id="content" rows="10" required>{{ old('content', $post->content) }}</textarea>
                                                 @error('content')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -55,15 +55,7 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <div class="input-group input-group-static">
-                                                <label class="ms-0" for="media_url">URL Média (optionnel)</label>
-                                                <input type="url" class="form-control @error('media_url') is-invalid @enderror" name="media_url" id="media_url" value="{{ old('media_url', $post->media_url) }}">
-                                                @error('media_url')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
+                                        
                                         <div class="col-md-6 mb-3">
                                             <div class="input-group input-group-static">
                                                 <label class="ms-0" for="tags">Tags (séparés par des virgules)</label>

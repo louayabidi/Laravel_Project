@@ -1,7 +1,7 @@
 <x-layout bodyClass="g-sidenav-show bg-gray-200">
     <x-header.header></x-header.header>
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        <x-navbars.navs.auth titlePage="New Post"></x-navbars.navs.auth>
+        <x-navbars.navs.auth titlePage="Nouveau Post"></x-navbars.navs.auth>
 
         <div class="container-fluid py-4">
             <div class="row">
@@ -9,7 +9,7 @@
                     <div class="card my-4">
                         <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                             <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                                <h6 class="text-white text-capitalize ps-3">Create new Postt</h6>
+                                <h6 class="text-white text-capitalize ps-3">Ajouter un nouveau post</h6>
                             </div>
                         </div>
                         <div class="card-body px-0 pb-2">
@@ -44,7 +44,7 @@
                                     <div class="row">
                                         <div class="col-md-12 mb-3">
                                             <div class="input-group input-group-static">
-                                                <label class="ms-0" for="content">Content *</label>
+                                                <label class="ms-0" for="content">Contenu *</label>
                                                 <textarea class="form-control @error('content') is-invalid @enderror" name="content" id="content" rows="10" required>{{ old('content') }}</textarea>
                                                 @error('content')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -54,16 +54,7 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <div class="input-group input-group-static">
-                                                <label class="ms-0" for="media_url">URL Média (optionnel)</label>
-                                                <input type="url" class="form-control @error('media_url') is-invalid @enderror" name="media_url" id="media_url" value="{{ old('media_url') }}">
-                                                @error('media_url')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                            <small class="text-muted">URL d'une image, vidéo YouTube, etc.</small>
-                                        </div>
+                                        
                                         <div class="col-md-6 mb-3">
                                             <div class="input-group input-group-static">
                                                 <label class="ms-0" for="tags">Tags (séparés par des virgules)</label>

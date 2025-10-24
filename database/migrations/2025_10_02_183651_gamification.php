@@ -6,9 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        // 1) Badge Categories Table
         Schema::create('badge_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -24,18 +26,33 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->string('image')->nullable();
-            $table->integer('criteria')->nullable();
+            $table->string('criteria')->nullable();
             $table->foreignId('badge_categorie_id')
                   ->constrained('badge_categories')
                   ->onDelete('cascade');
             $table->timestamps();
         });
+        Schema::create('badge_user', function (Blueprint $table) {
+            $table->id();
+
+            // Foreign keys
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('badge_id')->constrained()->onDelete('cascade');
+
+            $table->timestamps();
+
+            // Prevent duplicate badge assignment for the same user
+            $table->unique(['user_id', 'badge_id']);
+        });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        // Drop badges first because it depends on badge_categories
-        Schema::dropIfExists('badges');
-        Schema::dropIfExists('badge_categories');
+       Schema::dropIfExists('badge_user');
+       Schema::dropIfExists('badges');
+       Schema::dropIfExists('badge_categories');
     }
 };

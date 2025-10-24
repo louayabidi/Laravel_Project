@@ -10,7 +10,7 @@
                     <div class="card my-4">
                         <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                             <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center px-3">
-                                <h6 class="text-white text-capitalize ps-3">Post Administration</h6>
+                                <h6 class="text-white text-capitalize ps-3">Administration des posts</h6>
                                 <div class="d-flex">
                                     <a href="{{ route('admin.index', ['status' => 'all']) }}" class="btn btn-sm btn-outline-light me-1">Tous</a>
                                     <a href="{{ route('admin.index', ['status' => 'active']) }}" class="btn btn-sm btn-outline-light me-1">Actifs</a>
@@ -21,10 +21,10 @@
 
                         <div class="card-body px-0 pb-2">
                             @if(session('success'))
-                                <div class="alert alert-success alert-dismissible fade show mx-3" role="alert">
-                                    {{ session('success') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
+                            <div class="alert alert-success alert-dismissible fade show mx-3" role="alert">
+                                {{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                             @endif
 
                             <div class="row g-4 p-3">
@@ -73,7 +73,13 @@
                                                 </span>
                                                 <span>
                                                     <i class="material-icons text-sm text-danger me-1">favorite</i>
-                                                    {{ $post->likes_count ?? $post->likes->count() }}
+                                                    @php
+                                                    $commentLikesCount = 0;
+                                                    foreach ($post->comments as $comment) {
+                                                    $commentLikesCount += $comment->likes_count ?? $comment->likes->count();
+                                                    }
+                                                    @endphp
+                                                    {{ $commentLikesCount }}
                                                 </span>
                                                 <span>
                                                     <i class="material-icons text-sm text-warning me-1">flag</i>
@@ -85,13 +91,12 @@
                                             @if($post->tags)
                                             <div class="mb-3">
                                                 @foreach(explode(',', $post->tags) as $tag)
-                                                    @if(trim($tag) && $loop->index < 3)
-                                                        <span class="badge bg-gradient-secondary me-1 mb-1 small">{{ trim($tag) }}</span>
+                                                @if(trim($tag) && $loop->index < 3) <span class="badge bg-gradient-secondary me-1 mb-1 small">{{ trim($tag) }}</span>
                                                     @endif
-                                                @endforeach
-                                                @if(count(explode(',', $post->tags)) > 3)
+                                                    @endforeach
+                                                    @if(count(explode(',', $post->tags)) > 3)
                                                     <span class="badge bg-dark small">+{{ count(explode(',', $post->tags)) - 3 }}</span>
-                                                @endif
+                                                    @endif
                                             </div>
                                             @endif
                                         </div>
@@ -106,10 +111,7 @@
                                                     </a>
                                                     <!-- Reports Button -->
                                                     @if($post->reports->count() > 0)
-                                                    <button class="btn btn-sm btn-outline-warning me-1" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#reportsModal{{ $post->id }}"
-                                                            title="Gérer les Signalements">
+                                                    <button class="btn btn-sm btn-outline-warning me-1" data-bs-toggle="modal" data-bs-target="#reportsModal{{ $post->id }}" title="Gérer les Signalements">
                                                         <i class="material-icons text-sm">warning</i>
                                                         <span class="badge bg-danger badge-sm">{{ $post->reports->count() }}</span>
                                                     </button>
@@ -119,7 +121,7 @@
                                                     </button>
                                                     @endif
                                                     <!-- Delete Button -->
-                                                    <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
+                                                    <form action="{{ route('admin.destroy', $post) }}" method="POST" class="d-inline">
                                                         @csrf @method('DELETE')
                                                         <button type="submit" onclick="return confirm('Supprimer définitivement ce post ?')" class="btn btn-sm btn-outline-danger me-1" title="Supprimer">
                                                             <i class="material-icons text-sm">delete</i>
@@ -167,7 +169,7 @@
                                                     <i class="material-icons me-2">info</i>
                                                     <span>{{ $post->reports->count() }} signalement(s) pour ce post</span>
                                                 </div>
-                                                
+
                                                 @foreach($post->reports as $report)
                                                 <div class="card border-0 shadow-sm mb-4">
                                                     <div class="card-body">
@@ -208,10 +210,10 @@
                                                                     <strong class="text-dark">Rapporté par:</strong>
                                                                     <p class="mb-1">
                                                                         {{ $report->reporter->name ?? 'Utilisateur inconnu' }}
-                                                                        
+
                                                                     </p>
                                                                 </div>
-                                                                
+
                                                                 <div class="mb-2">
                                                                     <strong class="text-dark">Post concerné:</strong>
                                                                     <p class="mb-1">
@@ -224,7 +226,7 @@
                                                                 @if($report->comment_id)
                                                                 <div class="mb-2">
                                                                     <strong class="text-dark">Commentaire concerné:</strong>
-                                                                    
+
                                                                 </div>
                                                                 @endif
                                                             </div>
@@ -234,7 +236,7 @@
                                                                     <strong class="text-dark">Date de création:</strong>
                                                                     <p class="mb-1">{{ $report->created_at->format('d/m/Y à H:i') }}</p>
                                                                 </div>
-                                                                
+
                                                                 <div class="mb-2">
                                                                     <strong class="text-dark">Dernière mise à jour:</strong>
                                                                     <p class="mb-1">{{ $report->updated_at->format('d/m/Y à H:i') }}</p>
@@ -249,7 +251,7 @@
                                                                     <strong class="text-dark">Raison du signalement:</strong>
                                                                     <p class="mb-1 p-2 bg-light rounded">{{ $report->reason ?? 'Aucune raison spécifiée' }}</p>
                                                                 </div>
-                                                                
+
                                                                 @if($report->description)
                                                                 <div class="mb-3">
                                                                     <strong class="text-dark">Description détaillée:</strong>
