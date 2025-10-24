@@ -27,7 +27,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->middleware('guest');
 
-use App\Http\Controllers\SanteMesureController;
+
 use App\Http\Controllers\ObjectifController;
 use App\Http\Controllers\MetricsController;
 use Illuminate\Support\Facades\DB;
