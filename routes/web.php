@@ -30,6 +30,7 @@ Route::get('/', function () {
 
 use App\Http\Controllers\ObjectifController;
 use App\Http\Controllers\MetricsController;
+use App\Http\Controllers\SanteMesureController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
