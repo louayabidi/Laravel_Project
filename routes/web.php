@@ -226,7 +226,7 @@ Route::middleware('auth')->group(function () {
 
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
-    Route::delete('/posts/{post}', [PostController::class, 'adminDestroy'])->name('admin.destroy');
+    Route::delete('/admin/posts/{post}', [PostController::class, 'adminDestroy'])->name('admin.destroy');
 
     Route::post('/posts/{post}/hide', [PostController::class, 'hide'])->name('posts.hide');
     Route::post('/posts/{post}/unhide', [PostController::class, 'unhide'])->name('posts.unhide');

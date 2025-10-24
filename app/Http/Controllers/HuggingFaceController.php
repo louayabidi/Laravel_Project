@@ -163,7 +163,7 @@ Réponse attendue:";
 
     private function callHuggingFaceAPI($prompt)
     {
-        $apiKey = env('HUGGINGFACE_API_KEY');
+        $apiKey = env('HUGGINGFACE_API_KEY1');
         $model = env('HUGGINGFACE_MODEL');
         $baseUrl = env('HUGGINGFACE_API_URL');
 

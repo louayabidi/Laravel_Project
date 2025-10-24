@@ -20,7 +20,6 @@
                                 @endswitch
                             "></i>
                         </div>
-                        <div>
                         <div class="d-flex flex-column">
                             <h6 class="mb-0 text-white">{{ $objectif->title }}</h6>
                             <small>
