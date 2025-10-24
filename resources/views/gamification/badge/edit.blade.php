@@ -15,6 +15,16 @@
 
                         <!-- Card Body -->
                         <div class="card-body">
+                                                @if ($errors->any())
+    <div class="alert alert-danger">
+        <strong>There were some problems with your input:</strong>
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
                             <form action="{{ route('badges.update', $badge->id) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')

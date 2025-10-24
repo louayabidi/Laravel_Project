@@ -23,7 +23,7 @@ use App\Http\Controllers\IAObController;
 use App\Http\Controllers\SanteMesureController;
 use App\Http\Controllers\AiTestController;
 use App\Http\Controllers\HuggingFaceController;
-
+use App\Http\Controllers\BadgeGoalController;
 
 // Root redirect
 Route::get('/', function () {
@@ -155,15 +155,10 @@ Route::get('/food-suggestions', [App\Http\Controllers\MealFoodController::class,
     Route::get('admin/activity-logs', [FoodGoalController::class, 'activityLogs'])
         ->name('activity_logs');
 
-<<<<<<< HEAD
-    Route::resource('categories', BadgeCategoryController::class);
-    Route::resource('badges', BadgeController::class);
-
-=======
 Route::resource('categories', BadgeCategoryController::class);
 Route::resource('badges', BadgeController::class);
 Route::get('user-profile/{user}', [ProfileController::class, 'show'])->name('user-profile.show');
->>>>>>> gamification
+Route::post('/badges/{badge}/goals', [BadgeGoalController::class, 'store'])->name('badge-goals.store');
 
     // forum
     Route::resource('posts', PostController::class);

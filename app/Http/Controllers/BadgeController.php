@@ -86,7 +86,7 @@ class BadgeController extends Controller
      */
     public function show(Badge $badge)
     {
-        // show badge
+         $badge->load('goals');
         return view('gamification.badge.show', compact('badge'))
             ->with('activePage', 'badges');
     }

@@ -22,6 +22,11 @@ class Badge extends Model
 {
     return $this->hasMany(BadgeProgress::class);
 }
+public function goals()
+{
+    return $this->hasMany(BadgeGoal::class);
+}
+
 protected static function booted()
 {
     static::created(function ($badge) {
