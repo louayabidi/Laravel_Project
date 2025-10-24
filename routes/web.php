@@ -159,6 +159,7 @@ Route::resource('categories', BadgeCategoryController::class);
 Route::resource('badges', BadgeController::class);
 Route::get('user-profile/{user}', [ProfileController::class, 'show'])->name('user-profile.show');
 Route::post('/badges/{badge}/goals', [BadgeGoalController::class, 'store'])->name('badge-goals.store');
+Route::delete('/badge-goals/{badgeGoal}', [BadgeGoalController::class, 'destroy'])->name('badge-goals.destroy');
 
     // forum
     Route::resource('posts', PostController::class);

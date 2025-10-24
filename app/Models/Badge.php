@@ -35,7 +35,7 @@ protected static function booted()
         foreach ($users as $user) {
             $user->badgeProgress()->create([
                 'badge_id' => $badge->id,
-                'current_points' => $badge->criteria ?? 0,
+                'current_points' =>  0,
                 'is_completed' => false
             ]);
         }

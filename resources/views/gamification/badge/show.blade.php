@@ -116,6 +116,7 @@
                 </div>
 
                 {{-- Existing Goals --}}
+
                 @if($badge->goals && $badge->goals->count() > 0)
                     <div class="row justify-content-center mt-4">
                         <div class="col-md-8">
@@ -127,7 +128,16 @@
                                             <div>
                                                 <strong>{{ $goal->field }}</strong> {{ $goal->comparison }} {{ $goal->value }}<br>
                                                 <small class="text-muted">{{ $goal->points }} points</small>
+
                                             </div>
+                                            <form action="{{ route('badge-goals.destroy', $goal->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this goal?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger ">
+                <i class="fa fa-trash"></i> <!-- Bootstrap trash icon -->
+            </button>
+        </form>
+
                                         </li>
                                     @endforeach
                                 </ul>

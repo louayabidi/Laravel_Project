@@ -60,17 +60,17 @@ class FoodController extends Controller
 ];
 
 $user = auth()->user();
+$data = $request->only([
+    'sommeil_heures', 'eau_litres', 'sport_minutes',
+    'stress_niveau', 'meditation_minutes',
+    'temps_ecran_minutes', 'cafe_cups',
+    'calories', 'protein', 'carbs', 'fat', 'sugar', 'fiber'
+]);
 
-foreach ($badgeNames as $badgeName) {
-    $points = $this->calculateFoodPoints($nutrition, $badgeName);
+app(BadgeService::class)->calculateBadgePoints($user, $data);
 
-    if ($points > 0) {
-        $badges = Badge::where('name', $badgeName)->get();
-        foreach ($badges as $badge) {
-            $this->badgeService->addPoints($user, $badge, $points);
-        }
-    }
-}
+
+
 
 
         return redirect()->route('foods.index')->with('success', 'Aliment créé avec succès.');
@@ -130,37 +130,8 @@ public function update(Request $request, Food $food)
         }
         return response()->json($this->nutritionService->searchFoods($query));
     }
-    protected function calculateFoodPoints(array $nutrition,string $badgeName): int
-{
-    $points = 0;
-    switch($badgeName) {
-        case 'Healthy Eater':
-            if ($nutrition['protein'] >= 10) $points += 2;
-            if ($nutrition['fiber'] >= 5) $points += 2;
-            if ($nutrition['sugar'] < 5) $points += 1;
-            break;
-        case 'Low Calorie Consumer':
-            if ($nutrition['calories'] < 50) $points += 3;
-            break;
-        case 'Balanced Diet':
-            if ($nutrition['protein'] >= 5 && $nutrition['carbs'] >= 5 && $nutrition['fat'] >= 5) $points += 4;
-            break;
-        case 'Sugar Watcher':
-            if ($nutrition['sugar'] < 3) $points += 2;
-            break;
-        case 'Fiber Fanatic':
-            if ($nutrition['fiber'] >= 1) $points += 10;
-            break;
-        case 'Sugar Free':
-            if ($nutrition['sugar'] == 0) $points += 5;
-            break;
 
 
-        // Add more badge criteria cases as needed
-    }
 
-
-    return $points;
-}
 
 }

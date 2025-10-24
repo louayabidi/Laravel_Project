@@ -23,4 +23,9 @@ class BadgeGoalController extends Controller
 
         return back()->with('success', 'Goals added successfully!');
     }
+    public function destroy(BadgeGoal $badgeGoal)
+    {
+        $badgeGoal->delete();
+        return back()->with('success', 'Goal deleted successfully!');
+    }
 }

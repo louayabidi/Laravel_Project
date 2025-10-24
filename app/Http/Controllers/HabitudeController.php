@@ -62,30 +62,14 @@ class HabitudeController extends Controller
 
         Habitude::create($validated);
         $user = auth()->user();
-         $badgeNames = [
-            'Sleep Tracker',
-            'Early Riser',
-            'Hydration Starter',
-            'Water Warrior',
-            'Hydration Hero',
-            'Active Starter',
-            'Fitness Fan',
-            'Endurance Pro',
-            'Calm Mind',
-            'Mindful Starter',
-            'Zen Master',
-            'Digital Detox',
-            'Balanced Energy',
-        ];
-        foreach ($badgeNames as $badgeName) {
-            $points = $this->calculateHabitudePoints($user, $validated, $badgeName);
-            if ($points > 0) {
-                $badges = Badge::where('name', $badgeName)->get();
-                foreach ($badges as $badge) {
-                    $this->badgeService->addPoints($user, $badge, $points);
-                }
-            }
-        }
+        $data = $request->only([
+            'sommeil_heures', 'eau_litres', 'sport_minutes',
+            'stress_niveau', 'meditation_minutes',
+            'temps_ecran_minutes', 'cafe_cups',
+            'calories', 'protein', 'carbs', 'fat', 'sugar', 'fiber'
+        ]);
+
+        app(BadgeService::class)->calculateBadgePoints($user, $data);
 
         return redirect()->route('objectifs.habitudes.index', $objectifId)
             ->with('success', 'Habitude ajoutée !');
@@ -176,64 +160,6 @@ public function user()
 {
     return $this->belongsTo(User::class, 'user_id');
 }
- protected function calculateHabitudePoints($user, array $data, string $badgeName): int
-    {
-        $points = 0;
-
-        switch ($badgeName) {
-            // 💤 SLEEP
-            case 'Sleep Tracker':
-                if (!empty($data['sommeil_heures']) && $data['sommeil_heures'] >= 7) $points += 10;
-                break;
-
-           //
-
-            // 💧 HYDRATION
-            case 'Hydration Starter':
-                if (!empty($data['eau_litres']) && $data['eau_litres'] >= 1) $points += 5;
-                break;
-            case 'Water Warrior':
-                if (!empty($data['eau_litres']) && $data['eau_litres'] >= 2) $points += 10;
-                break;
-            case 'Hydration Hero':
-                if (!empty($data['eau_litres']) && $data['eau_litres'] >= 3) $points += 20;
-                break;
-
-            // 🏃 SPORT
-            case 'Active Starter':
-                if (!empty($data['sport_minutes']) && $data['sport_minutes'] >= 20) $points += 10;
-                break;
-            case 'Fitness Fan':
-                if (!empty($data['sport_minutes']) && $data['sport_minutes'] >= 45) $points += 20;
-                break;
-            case 'Endurance Pro':
-                if (!empty($data['sport_minutes']) && $data['sport_minutes'] >= 60) $points += 40;
-                break;
-
-            // 🧘 STRESS & MEDITATION
-            case 'Calm Mind':
-                if (isset($data['stress_niveau']) && $data['stress_niveau'] <= 3) $points += 15;
-                break;
-            case 'Mindful Starter':
-                if (!empty($data['meditation_minutes']) && $data['meditation_minutes'] >= 10) $points += 15;
-                break;
-            case 'Zen Master':
-                if (!empty($data['meditation_minutes']) && $data['meditation_minutes'] >= 30) $points += 25;
-                break;
-
-            // 📱 SCREEN TIME
-            case 'Digital Detox':
-                if (!empty($data['temps_ecran_minutes']) && $data['temps_ecran_minutes'] <= 120) $points += 10;
-                break;
-
-            // ☕ COFFEE
-            case 'Balanced Energy':
-                if ( $data['cafe_cups'] <= 2) $points += 10;
-                break;
-        }
-
-        return $points;
-    }
 
 
 }
